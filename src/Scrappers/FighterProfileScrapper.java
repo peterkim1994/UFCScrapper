@@ -69,11 +69,11 @@ public class FighterProfileScrapper {
             Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
             
             Elements fighterStats = fighterPage.getElementsByClass("c-stat-compare__number");
-            for(Element stat: fighterStats){			   	
-              String statValue = stat.text();
-              statValue = statValue.replaceAll("'"," ");    
-              System.out.println(statValue);
-            }
+//            for(Element stat: fighterStats){			   	
+//              String statValue = stat.text();
+//              statValue = statValue.replaceAll("'"," ");    
+//              System.out.println(statValue);
+//            }
             fighter.strikesLanded = Cleaner.parseDouble(fighterStats.get(0));
             fighter.strikesAbsorbed = Cleaner.parseDouble(fighterStats.get(1));
             fighter.takeDownsLanded = Cleaner.parseDouble(fighterStats.get(2));
@@ -82,14 +82,13 @@ public class FighterProfileScrapper {
             fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
             fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
             String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
-            fighter.averageFightTime = Double.parseDouble(timeInDecimal);           
-            
+            fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
             
             Elements fighterInfo  = fighterPage.getElementsByClass("c-bio__text");
-            for(Element info: fighterInfo){
-                String infoValue = info.text();
-                System.out.println(infoValue);
-            }
+//            for(Element info: fighterInfo){
+//                String infoValue = info.text();
+//                System.out.println(infoValue);
+//            }
             fighter.homeCountry = Cleaner.splitThenExtract(fighterInfo.get(1),",",1);
             fighter.homeTown = Cleaner.splitThenExtract(fighterInfo.get(1),",", 0);
             fighter.style = Cleaner.parseText(fighterInfo.get(2));
@@ -97,8 +96,7 @@ public class FighterProfileScrapper {
             fighter.height = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(4)));
             fighter.weight = (int) Cleaner.parseDouble(fighterInfo.get(5));
             fighter.reach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(7)));
-            fighter.legReach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(8)));
-            
+            fighter.legReach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(8)));            
             
             Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
             System.out.println(fighterHistory.text());
@@ -109,10 +107,10 @@ public class FighterProfileScrapper {
             int losses = Integer.parseInt(record[1]);            
             
             Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value");
-            for(Element e: percentageStats){
-                System.out.println(e.text());
-                System.out.println(Cleaner.extractPercentage(e));
-            }
+//            for(Element e: percentageStats){
+//                System.out.println(e.text());
+//                System.out.println(Cleaner.extractPercentage(e));
+//            }
             fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
             fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
             fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
@@ -123,7 +121,11 @@ public class FighterProfileScrapper {
             
             fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
             fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
-            //e-stat-body_x5F__x5F_leg_percent
+            fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));            
+            
+            fighter.takeDownAccuracy =  Cleaner.percentageToDecimal(fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0));
+            fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(1));            
+   
         }  	
     }
 }

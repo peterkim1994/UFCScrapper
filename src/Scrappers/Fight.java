@@ -1,4 +1,4 @@
-package UFC;
+package Scrappers;
 
 import Scrappers.Fighter;
 import java.sql.Date;
@@ -20,6 +20,13 @@ public class Fight {
         
         protected int roundEnded;              
 	protected boolean win;        
+        protected int methodOfOutcome;
+        
+        protected String [] 
+        
+        
+        
+        
         
         
 //        public static void main(String[] args) {

@@ -47,7 +47,7 @@ public class FightStatTest {
         FightStat instance = null;
         instance.parseNumberAndPercentage(rawData);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+       
     }
     
 }
