@@ -5,6 +5,8 @@
  */
 package TextPreprocessingUtils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.jsoup.nodes.Element;
 
 /**
@@ -12,6 +14,8 @@ import org.jsoup.nodes.Element;
  * @author peter
  */
 public class Cleaner {
+    
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
     
     
     public static String getNumericalString(String text){
@@ -69,7 +73,11 @@ public class Cleaner {
     }
     public static String splitThenExtract(Element element, String seperator, int indexToExtract){
         String [] splits = element.text().split(seperator);
-        return splits[indexToExtract];
+        if(indexToExtract>0){
+            return splits[indexToExtract];
+        }else{
+            return splits[splits.length-indexToExtract];
+        }
     }
     
      public static  double extractPercentage(Element element){
@@ -82,10 +90,11 @@ public class Cleaner {
         return percentage;
     }
      
-    //converts Jan 14 2019 ---> 14 Jan 2019
-    public static String reformatDate(String date){
-        date = date.replaceAll("\\.", "");
-        
-        
+    //converts Jan 14 2019 ---> 
+    public static LocalDate reformatDate(String date){
+        date = date.replaceAll("\\s", "-");
+        date = date.replaceAll(",", "").trim();   
+        LocalDate aDate = LocalDate.parse(date, formatter);
+        return aDate;
     }
 }

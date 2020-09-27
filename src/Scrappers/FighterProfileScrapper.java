@@ -37,7 +37,7 @@ public class FighterProfileScrapper {
    
     public static void main(String[] args) throws IOException, SQLException {
         FighterProfileScrapper x = new FighterProfileScrapper();
-        x.scrapeProfile("petr yan");
+        x.scrapeProfile("tito ortiz");
     }
    
    public FighterProfileScrapper(){
@@ -86,18 +86,20 @@ public class FighterProfileScrapper {
             fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
             
             Elements fighterInfo  = fighterPage.getElementsByClass("c-bio__text");
-//            for(Element info: fighterInfo){
-//                String infoValue = info.text();
-//                System.out.println(infoValue);
-//            }
+            for(Element info: fighterInfo){
+                String infoValue = info.text();
+                System.out.println(infoValue);
+            }
+            fighterInfo.textNodes();
+                
             fighter.homeCountry = Cleaner.splitThenExtract(fighterInfo.get(1),",",1);
             fighter.homeTown = Cleaner.splitThenExtract(fighterInfo.get(1),",", 0);
-            fighter.style = Cleaner.parseText(fighterInfo.get(2));
-            fighter.dob = LocalDate.now().getYear() - Cleaner.parseNumber(fighterInfo.get(3));
-            fighter.height = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(4)));
-            fighter.weight = (int) Cleaner.parseDouble(fighterInfo.get(5));
-            fighter.reach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(7)));
-            fighter.legReach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(8)));            
+         //   fighter.style = Cleaner.parseText(fighterInfo.get(2));
+         //   fighter.dob = LocalDate.now().getYear() - Cleaner.parseNumber(fighterInfo.get(3));
+         //   fighter.height = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(4)));
+        //    fighter.weight = (int) Cleaner.parseDouble(fighterInfo.get(5));
+       //     fighter.reach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(7)));
+       //     fighter.legReach = (int) (2.54 * Cleaner.parseDouble(fighterInfo.get(8)));            
             
             Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
             System.out.println(fighterHistory.text());
@@ -108,10 +110,10 @@ public class FighterProfileScrapper {
             int losses = Integer.parseInt(record[1]);            
             
             Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value");
-//            for(Element e: percentageStats){
-//                System.out.println(e.text());
-//                System.out.println(Cleaner.extractPercentage(e));
-//            }
+            for(Element e: percentageStats){
+                System.out.println(e.text());
+                System.out.println(Cleaner.extractPercentage(e));
+            }
             fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
             fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
             fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
@@ -124,8 +126,12 @@ public class FighterProfileScrapper {
             fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
             fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));            
             
-            fighter.takeDownAccuracy =  Cleaner.percentageToDecimal(fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0));
-            fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(1));            
+            
+            fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
+            fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
+            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
+            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());
+                      
    
         }  	
     }

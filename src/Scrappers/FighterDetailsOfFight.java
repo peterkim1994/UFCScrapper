@@ -9,6 +9,7 @@ import UFC.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 /**
  *
  * @author peter
@@ -28,11 +29,14 @@ public class FighterDetailsOfFight {
     
     
     public static void main(String[] args) throws ParseException {
-       // LocalDate x = LocalDate.parse("Jan. 14 2019");
-        String input = "Jun 15 2020";
-        SimpleDateFormat parser = new SimpleDateFormat("MMM d  yyyy");
-        System.out.println(parser.parse(input).toString());
-    //    System.out.println(x);
+     //   LocalDate x = LocalDate.parse("September-19-2020");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
+        LocalDate date = LocalDate.parse("September-19-2019", formatter);
+       
+//        String input = "Jun 15 2020";
+//        SimpleDateFormat parser = new SimpleDateFormat("MMM d  yyyy");
+//        System.out.println(parser.parse(input).toString());
+        System.out.println(date.toString());
     }
     
     

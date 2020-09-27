@@ -9,9 +9,6 @@ public class Fight {
 	FighterDetailsOfFight fighter1;
         FighterDetailsOfFight fighter2;
 	
-	protected int fighter1RingRust;
-	protected int fighter2RingRust;	
-	
 	protected boolean mainEvent;
         protected boolean championShipRounds;
 	protected LocalDate date; 
