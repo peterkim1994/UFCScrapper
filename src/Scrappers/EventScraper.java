@@ -42,6 +42,7 @@ public class EventScraper {
        
        Document eventPage = Jsoup.connect(url).get();       
        Elements eventDetails = eventPage.getElementsByClass("b-list__box-list-item");     
+       UFCEvent 
        String country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
        String city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);
        for (int i = 0; i < eventDetails.size(); i++) {
@@ -52,21 +53,22 @@ public class EventScraper {
        ArrayList<FighterElement> fighters = new ArrayList<>();
        for (int i = 0; i < fightersOnEvent.size(); i++) {
            Element fighterElement = fightersOnEvent.get(i);
-           if(i%2==0){
-               boolean x = true;
-               FighterElement a = new FighterElement(fighterElement, x);
-               fighters.add(a);
+           if(i%2==0){ 
+               boolean won = true;
+               fighters.add(new FighterElement(fighterElement, won));
            }else{
-               
+               boolean lost = false;
+               fighters.add(new FighterElement(fighterElement, lost));
            }           
        }
+       
        
    }
    
    
    
    
-   protected class FighterElement{       
+   protected static class FighterElement{       
        protected String name;
        protected String href;
        protected boolean winner;
