@@ -81,4 +81,11 @@ public class Cleaner {
         double percentage = percentageToDecimal(splitStats[1]);
         return percentage;
     }
+     
+    //converts Jan 14 2019 ---> 14 Jan 2019
+    public static String reformatDate(String date){
+        date = date.replaceAll("\\.", "");
+        
+        
+    }
 }

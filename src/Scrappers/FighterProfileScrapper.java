@@ -31,6 +31,7 @@ public class FighterProfileScrapper {
     
    Connection conn;
    String url = "jdbc:derby://localhost:1527/UFC;";
+   //String url = "jdbc:derby:UFC;";
    String user = "peterKim";
    String password = "peterkim";  
    
@@ -42,7 +43,7 @@ public class FighterProfileScrapper {
    public FighterProfileScrapper(){
         try {
             conn = DriverManager.getConnection(url, user, password);
-            System.out.println(url + " connectected successfully");
+            System.out.println(conn.toString() + " connectected successfully");
         } catch (SQLException ex) {
             System.err.println(ex);
             Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,7 +52,7 @@ public class FighterProfileScrapper {
    
    public boolean dataBaseContains(String name) throws SQLException{       
        Statement statement = conn.createStatement();
-       String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.NAME = '" + name +"'";
+       String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTERNAME = '" + name +"'";
        ResultSet rs = statement.executeQuery(query);
        while(rs.next()){
            return true;
@@ -60,7 +61,7 @@ public class FighterProfileScrapper {
    }
 
     
-    public void scrapeProfile(String name) throws IOException, SQLException{
+    public void scrapeProfile(String name) throws IOException, SQLException{       
         if(!dataBaseContains(name)){    
             Fighter fighter = new Fighter(name);
             name = Cleaner.whiteSpaceToHyphen(name);

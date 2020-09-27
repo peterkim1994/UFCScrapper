@@ -1,5 +1,5 @@
 package UFC;
 
 public enum Method {
-    TKO,SUB,UD,MD,SD,DQ
+    TKOWIN,SUBWIN,UDWIN,SDWIN,TKOLOSS,SUBLOSS,UDLOSS,SDLOSS,NA
 }

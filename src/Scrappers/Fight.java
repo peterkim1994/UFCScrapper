@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 public class Fight {	
 	
-	protected Fighter fighter1;
-	protected Fighter fighter2;
+	FighterDetailsOfFight fighter1;
+        FighterDetailsOfFight fighter2;
 	
 	protected int fighter1RingRust;
 	protected int fighter2RingRust;	
@@ -22,7 +22,7 @@ public class Fight {
 	protected boolean win;        
         protected int methodOfOutcome;
         
-        protected String [] 
+  //      protected 
         
         
         
@@ -36,11 +36,5 @@ public class Fight {
 //                System.out.println(d);        
 //        }
         
-        //Calculates number of months from objects date since the input date
-        public int calculateRingRust(LocalDate lastFight){
-            int yearsSince = this.date.getYear()  - lastFight.getYear();
-            int monthsSince = yearsSince*12;
-            monthsSince +=  (this.date.getMonthValue() - lastFight.getMonthValue());
-            return monthsSince;
-        }
+
 }
