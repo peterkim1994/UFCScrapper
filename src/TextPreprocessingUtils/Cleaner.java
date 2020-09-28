@@ -73,10 +73,10 @@ public class Cleaner {
     }
     public static String splitThenExtract(Element element, String seperator, int indexToExtract){
         String [] splits = element.text().split(seperator);
-        if(indexToExtract>0){
+        if(indexToExtract >= 0){
             return splits[indexToExtract];
-        }else{
-            return splits[splits.length-indexToExtract];
+        }else{//if indexToExtract is negative
+            return splits[splits.length + indexToExtract];
         }
     }
     
@@ -92,6 +92,7 @@ public class Cleaner {
      
     //converts Jan 14 2019 ---> 
     public static LocalDate reformatDate(String date){
+        date = date.trim();
         date = date.replaceAll("\\s", "-");
         date = date.replaceAll(",", "").trim();   
         LocalDate aDate = LocalDate.parse(date, formatter);
