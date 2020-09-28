@@ -16,12 +16,19 @@ import java.time.format.DateTimeFormatter;
  */
 public class FighterDetailsOfFight {
     Fighter fighter;
-    Method [] outcomeOfLastFiveFights;
+    Method [] outcomeOfLastFourFights;
     LocalDate eventDate;
     int numOfBonusesInLastThreeYears;
     int winsAtTimeOfEvent;
     int lossesAtTimeOfEvent;    
     int layOffTimeMonths;    
+    int submissionLosses;
+    int tkoLosses;
+    int tkoWins;
+    int submissionWins;
+    int decWins;
+    int declosses;
+    
     
     public FighterDetailsOfFight(Fighter fighter, LocalDate date){
         

@@ -16,6 +16,7 @@ import org.jsoup.select.Elements;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,13 +35,23 @@ public class FighterProfileScrapper {
    //String url = "jdbc:derby:UFC;";
    static String user = "peterKim";
    static String password = "peterkim";  
+   static PreparedStatement prepSt;
+   final int NUM_VALS = 31;
    
-    public static void main(String[] args) throws IOException, SQLException {
-       
+   static String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME,STANCE,DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH,LEGREACH, WINS, LOSSES, STRIKESLANDED,"
+           + " STRIKING ACCURACY, STRIKESABSORBED,STIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTINGTIME,"
+           + "STRIKESSTANDING,CLINCHSTRKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION) ";
+   static String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";    
+     
+    public static void main(String[] args) throws IOException, SQLException {       
         connectToDB();
-        Fighter fighter = new Fighter("name");
+   //     Fighter fighter = new Fighter("name");
           // FighterProfileScrapper x = new FighterProfileScrapper();
-        scrapeUFCprofile("tito ortiz",fighter);
+      //  scrapeUFCprofile("tito ortiz",fighter);
+      PreparedStatement x = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
+        for(int i = 0; i <31; i++)
+            System.out.print("?,");   
+   
     }
    
     public FighterProfileScrapper(Connection conn){
@@ -78,6 +89,8 @@ public class FighterProfileScrapper {
        if(!dataBaseContains(name)){
            Fighter fighter = new Fighter("name");        
            scrapeUFCprofile(fighter);
+           
+           
        }
    }
 
@@ -155,4 +168,9 @@ public class FighterProfileScrapper {
         System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
         System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
     }
+    
+    public insertNewFighterToDB(Fighter fighter){
+        
+    }
+    
 }
