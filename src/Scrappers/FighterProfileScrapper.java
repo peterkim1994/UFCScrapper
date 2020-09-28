@@ -30,21 +30,9 @@ import java.util.logging.Logger;
  */
 public class FighterProfileScrapper {
     
-   static Connection conn;
-   static String url = "jdbc:derby://localhost:1527/UFC;";
-   //String url = "jdbc:derby:UFC;";
-   static String user = "peterKim";
-   static String password = "peterkim";  
-   static PreparedStatement prepSt;
-   final int NUM_VALS = 31;
-   
-   static String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME,STANCE,DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH,LEGREACH, WINS, LOSSES, STRIKESLANDED,"
-           + " STRIKING ACCURACY, STRIKESABSORBED,STIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTINGTIME,"
-           + "STRIKESSTANDING,CLINCHSTRKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION) ";
-   static String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";    
-     
-    public static void main(String[] args) throws IOException, SQLException {       
-        connectToDB();
+    static DataBaseMessenger db;
+
+    public static void main(String[] args) throws IOException, SQLException {             
    //     Fighter fighter = new Fighter("name");
           // FighterProfileScrapper x = new FighterProfileScrapper();
       //  scrapeUFCprofile("tito ortiz",fighter);
@@ -54,47 +42,35 @@ public class FighterProfileScrapper {
    
     }
    
-    public FighterProfileScrapper(Connection conn){
-        this.conn = conn;
+    public FighterProfileScrapper(DataBaseMessenger db){
+        this.db = db;
     }
     
    public FighterProfileScrapper(){
         
    }
    
-   public static void connectToDB(){
-       try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println(conn.toString() + " connectected successfully");
-        } catch (SQLException ex) {
-            System.err.println(ex);
-            Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-   }
+
    
    public static boolean dataBaseContains(String name) throws SQLException{       
-       Statement statement = conn.createStatement();
+       Statement statement = db.conn.createStatement();
        String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTERNAME = '" + name +"'";
        ResultSet rs = statement.executeQuery(query);
+      // ResultSet rss = db.g
        while(rs.next()){
            return true;
        }
        return false;
    }
    
-   public static void scrapeUFCStatsProfile(Document fighterStatPage){
-       
+   public static void scrapeFighter(Document fighterStatPage) throws IOException, SQLException{       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.parseText(name);       
-       if(!dataBaseContains(name)){
+       if(!dataBaseContains(fighterName)){
            Fighter fighter = new Fighter("name");        
-           scrapeUFCprofile(fighter);
-           
-           
+           scrapeUFCprofile(fighter);   
        }
-   }
-
-    
+   }    
     public static void scrapeUFCprofile(Fighter fighter) throws IOException, SQLException{       
           
         String name = Cleaner.whiteSpaceToHyphen(fighter.name);
@@ -118,10 +94,12 @@ public class FighterProfileScrapper {
         String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
         fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
 
+        
+        //Label and value pairs from the biograpy section. The structure and information contained varies per fighter so values are extracted in this fashion
         Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
         Elements biographyValues  = fighterPage.getElementsByClass("c-bio__text");            
-
-
+        boolean legReachInfoAvailable = false;
+        
         for (int i = 0; i < biographyValues.size(); i++) {
             String label = biographyLabels.get(i).text();
             String value = biographyValues.get(i).text();
@@ -132,8 +110,15 @@ public class FighterProfileScrapper {
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
             }else if(label.contains("WEIGHT")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
-            }                
-        }            
+            }else if(label.contains("LEG REACH")){             
+                fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
+                legReachInfoAvailable = true;
+            }
+        }
+        
+        if(!legReachInfoAvailable)
+            fighter.legReach = 0;
+        
         fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",1);
         fighter.homeTown = Cleaner.splitThenExtract(biographyValues.get(1),",", 0);        
 
@@ -169,8 +154,6 @@ public class FighterProfileScrapper {
         System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
     }
     
-    public insertNewFighterToDB(Fighter fighter){
-        
-    }
+
     
 }

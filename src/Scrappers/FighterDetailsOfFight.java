@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
  * @author peter
  */
 public class FighterDetailsOfFight {
-    Fighter fighter;
+    String fighter;
     Method [] outcomeOfLastFourFights;
     LocalDate eventDate;
     int numOfBonusesInLastThreeYears;
@@ -30,7 +30,7 @@ public class FighterDetailsOfFight {
     int declosses;
     
     
-    public FighterDetailsOfFight(Fighter fighter, LocalDate date){
+    public FighterDetailsOfFight(String fighterName, LocalDate date){
         
     }
     
@@ -39,14 +39,8 @@ public class FighterDetailsOfFight {
      //   LocalDate x = LocalDate.parse("September-19-2020");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
         LocalDate date = LocalDate.parse("September-19-2019", formatter);
-       
-//        String input = "Jun 15 2020";
-//        SimpleDateFormat parser = new SimpleDateFormat("MMM d  yyyy");
-//        System.out.println(parser.parse(input).toString());
         System.out.println(date.toString());
-    }
-    
-    
+    }    
     
     //Calculates number of months from objects date since the input date
     public int calculateRingRust(LocalDate lastFight){
