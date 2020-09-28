@@ -10,6 +10,8 @@ import static Scrappers.FighterProfileScrapper.password;
 import static Scrappers.FighterProfileScrapper.url;
 import static Scrappers.FighterProfileScrapper.user;
 import java.sql.Connection;
+import java.sql.Date;
+
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +33,7 @@ public class DataBaseMessenger {
    String password = "peterkim";  
    PreparedStatement fighterInsert;
    PreparedStatement getFighter;
-   PreparedStatement fighterEventDetailInsert;
+ //  PreparedStatement fighterEventDetailInsert;
    PreparedStatement insertFightEvent;
    final int NUM_VALS = 31;
    
@@ -40,45 +42,29 @@ public class DataBaseMessenger {
            + "STRIKESSTANDING,CLINCHSTRIKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION,LEGREACH) ";
    final String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";         
    
-   final String prepedFightDetailCols = "INSERT INTO FIGHTERDETAILSOFFIGHT (FIGHTER, STANCE, PREVIOUSOUTCOME1, PREVIOUSOUTCOME2, PREVIOUSOUTCOME3, PREVIOUSOUTCOME4, EVENTDATE,"
-           + "NUMBEROFBONUSESINLASTTHREEYEARS, WINSATTIMEOFEVENT, LOSESATTIMEOFEVENT,LAYOFFTIMEMONTHS)";
-   final String prepedFightDetailVals = " VALUES (?,?,?,?,?,?,?,?,?,?)";
+   final String prepedFightDetailCols = "INSERT INTO FIGHTEVENT (EVENTDATE, CITY, COUNTRY, ROUNDS, "
+           + "FIGHTER1,FIGHTER1RECENT1, FIGHTER1RECENT2, FIGHTER1RECENT3, FIGHTER1RECENT4, "
+           + "FIGHTER1NUMUFCFIGHTS, FIGHTER1RECENTBONUSES,FIGHTER1WINRECORD, FIGHTER1LOSSRECORD,FIGHTER1LAYOFFTIME,"
+           + "FIGHTER2, FIGHTER2RECENT1, FIGHTER2RECENT2, FIGHTER2RECENT3, FIGHTER2RECENT4, "
+           + "FIGHTER2NUMUFCFIGHTS, FIGHTER2RECENTBONUSES,FIGHTER2WINRECORD, FIGHTER2LOSSRECORD,FIGHTER2LAYOFFTIME,"
+           + "FIGHTER1OUTCOMEFORFIGHT,FIGHTER1WIN)";
+   final String prepedFightDetailVals = " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
    
-   final String prepEventCols  = "INSERT INTO FIGHT (FIGHTER1, FIGHTER2, ROUNDS, DATE, COUNTRY, CITY, METHODOFOUTCOME, FIGHTER1WIN)";
-   final String prepEventVals = "VALUES(?,?,?,?,?,?,?,?)";
+//   final String prepEventCols  = "INSERT INTO FIGHT (FIGHTER1, FIGHTER2, DATE,  METHODOFOUTCOME, FIGHTER1WIN)";
+//   final String prepEventVals = "VALUES(?,?,?,?,?,?,?,?)";
            
    public DataBaseMessenger(){
        try {
            connectToDB();
            fighterInsert = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
            getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTERNAME = ?");
-           fighterEventDetailInsert = conn.prepareStatement(prepedFightDetailCols+ prepedFightDetailVals);
-           insertFightEvent = conn.prepareStatement(prepEventCols + prepEventVals);
+           insertFightEvent = conn.prepareStatement(prepedFightDetailCols + prepedFightDetailVals);
+           //insertFightEvent = conn.prepareStatement(prepEventCols + prepEventVals);
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
    }
-   
-   public Fighter getFighter(String name){
-       try {
-           name = name.trim();
-           getFighter.setString(1,name);
-           ResultSet rs = getFighter.executeQuery();
-           rs.next();
-           Fighter fighter = new Fighter(name);
-           fighter.dob = rs.getInt("DOB");
-           fighter.stance = rs.getString("STANCE");
-           fighter.homeCountry = rs.getString("COUNTRY");
-           fighter.homeTown = rs.getString("HOMETOWN");
-           fighter.height = rs.getInt("HEIGHT");
-           fighter.weight = rs.getInt("WEIGHT");       
-       } catch (SQLException ex) {
-           Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
-       }
-       return null;
-   }
-   
-   
+
    
    public void connectToDB(){
        try {
@@ -89,7 +75,18 @@ public class DataBaseMessenger {
             Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
    }
-    
+   
+   public void insertFighterEventDetails(FighterDetailsOfFight fighter1,FighterDetailsOfFight fighter2,
+           UFCEvent event, String method, boolean fighter1Won) throws SQLException{
+           insertFightEvent.setDate(1, Date.valueOf(event.date));
+           insertFightEvent.setString(2, event.city);
+           insertFightEvent.setString(3, event.country);
+   }
+   
+   
+   
+   
+   
     public void insertNewFighterToDB(Fighter fighter) throws SQLException
     {
         fighterInsert.setString(1, fighter.name);
@@ -124,6 +121,25 @@ public class DataBaseMessenger {
         fighterInsert.setDouble(28, fighter.submission);
         fighterInsert.setDouble(29, fighter.decision);
         fighterInsert.setDouble(30, fighter.legReach);          
-        
+        fighterInsert.executeUpdate();
     }
+    
+       public Fighter getFighter(String name){
+       try {
+           name = name.trim();
+           getFighter.setString(1,name);
+           ResultSet rs = getFighter.executeQuery();
+           rs.next();
+           Fighter fighter = new Fighter(name);
+           fighter.dob = rs.getInt("DOB");
+           fighter.stance = rs.getString("STANCE");
+           fighter.homeCountry = rs.getString("COUNTRY");
+           fighter.homeTown = rs.getString("HOMETOWN");
+           fighter.height = rs.getInt("HEIGHT");
+           fighter.weight = rs.getInt("WEIGHT");       
+       } catch (SQLException ex) {
+           Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       return null;
+   }
 }

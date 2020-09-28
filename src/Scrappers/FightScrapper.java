@@ -25,15 +25,22 @@ public class FightScrapper {
     static DataBaseMessenger db; 
     
     public static void main(String[] args) {       
+        DataBaseMessenger db = new DataBaseMessenger();
+        db.connectToDB();
+        EventScraper.db =  db;      
+        FightScrapper.db = db;
+        FighterProfileScrapper.db = db;   
         EventScraper.scrapeEvent(1);
+    //    FighterProfileScrapper.scrapeUFCprofile(new Fighter("paul felder"));
     }
     
-    public static void scrapeFight(Element fighter1, Element fighter2, boolean fighterOneWin, UFCEvent event) throws IOException, SQLException{   
-        scrapeFighterDetailsBeforeFight(fighter1, event.date);
-        scrapeFighterDetailsBeforeFight(fighter2, event.date);       
+    public static void scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin) throws IOException, SQLException{   
+        FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, event.date);
+        FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, event.date); 
+        db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);
     }
     
-    public static void scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException, SQLException{ 
+    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException, SQLException{ 
         
         String fighterName = fighter.text().trim();
         FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);//object to encapulate info regarding fighter record history at time of fight        
@@ -43,20 +50,22 @@ public class FightScrapper {
         String record = Cleaner.splitThenExtract(fighterStatPage.getElementsByClass("b-content__title-record").text(),":",1);   
         setFighterRecordVals(details, record);    
         
-        System.out.println(record);
+       // System.out.println(record);
         Elements tableRows = fighterStatPage.getElementsByClass("b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click");    
         boolean startScraping = false;
-        int recentFightCounter = details.outcomeOfLastFourFights.length;
+        int recentFightCounter = details.outcomeOfLastFourFights.length;       
         
         for(int i=0; i<tableRows.size() ; i++){
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();
+            System.out.println(previousFightDate + "----------");
             System.out.println(previousFightDate);          
             LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
             LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);            
             boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event
-            boolean ringRustCalculated =false;            
-            if(startScraping){                 
+            boolean ringRustCalculated =false;                 
+            if(startScraping){
+                details.numUFCFights++;
                 String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)").text().trim();                
                 if(recentFightCounter < details.outcomeOfLastFourFights.length){//if info for most recent four fights have not been extracted yet
                     details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );
@@ -73,7 +82,7 @@ public class FightScrapper {
                     else if(methodOfBoutResult.contains("U-DEC"))
                         details.declosses++;
                 }
-                if(!ringRustCalculated){
+                if(!ringRustCalculated){                   
                     details.calculateRingRust(pastFightDate);
                     ringRustCalculated = true;
                 }
@@ -86,6 +95,7 @@ public class FightScrapper {
             }
         }        
         System.out.println(details);
+        return details;
     }
     
     public static void setFighterRecordVals(FighterDetailsOfFight details, String record){

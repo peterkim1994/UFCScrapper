@@ -26,7 +26,7 @@ public class FighterDetailsOfFight {
    
     int layOffTimeMonths;    
     int submissionLosses;
-    
+    int numUFCFights;
     
     int tkoLosses;
     int tkoWins;
@@ -39,6 +39,10 @@ public class FighterDetailsOfFight {
         fighter = fighterName;
         eventDate = date;
         this.outcomeOfLastFourFights = new String[] {"NA","NA","NA","NA"};
+        numUFCFights = 0;
+    }
+     public FighterDetailsOfFight(){
+  
     }
     
      @Override
@@ -51,6 +55,10 @@ public class FighterDetailsOfFight {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
         LocalDate date = LocalDate.parse("September-19-2019", formatter);
         System.out.println(date.toString());
+        FighterDetailsOfFight x = new FighterDetailsOfFight();
+        x.eventDate = LocalDate.parse("2025-11-10");
+        x.calculateRingRust(date);
+        System.out.println(x.layOffTimeMonths);
     }    
     
     //Calculates number of months from objects date since the input date

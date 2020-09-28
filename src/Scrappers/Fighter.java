@@ -15,7 +15,8 @@ public class Fighter {
 	protected int reach;
         int legReach;
         int weight;
-        protected String record;
+        int wins;
+        int losses;
         
         
 	//UFCSTATS.COM Stats
