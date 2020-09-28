@@ -32,6 +32,7 @@ public class DataBaseMessenger {
    PreparedStatement fighterInsert;
    PreparedStatement getFighter;
    PreparedStatement fighterEventDetailInsert;
+   PreparedStatement insertFightEvent;
    final int NUM_VALS = 31;
    
    final String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME, STANCE, DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH, WINS, LOSSES, STRIKESLANDED,"
@@ -43,7 +44,8 @@ public class DataBaseMessenger {
            + "NUMBEROFBONUSESINLASTTHREEYEARS, WINSATTIMEOFEVENT, LOSESATTIMEOFEVENT,LAYOFFTIMEMONTHS)";
    final String prepedFightDetailVals = " VALUES (?,?,?,?,?,?,?,?,?,?)";
    
-   final String         
+   final String prepEventCols  = "INSERT INTO FIGHT (FIGHTER1, FIGHTER2, ROUNDS, DATE, COUNTRY, CITY, METHODOFOUTCOME, FIGHTER1WIN)";
+   final String prepEventVals = "VALUES(?,?,?,?,?,?,?,?)";
            
    public DataBaseMessenger(){
        try {
@@ -51,6 +53,7 @@ public class DataBaseMessenger {
            fighterInsert = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
            getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTERNAME = ?");
            fighterEventDetailInsert = conn.prepareStatement(prepedFightDetailCols+ prepedFightDetailVals);
+           insertFightEvent = conn.prepareStatement(prepEventCols + prepEventVals);
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
