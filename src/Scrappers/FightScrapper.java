@@ -5,19 +5,23 @@
  */
 package Scrappers;
 
+import java.sql.Connection;
+import java.time.LocalDate;
+import org.jsoup.nodes.Element;
+
 /**
  *
  * @author peter
  */
 public class FightScrapper {
     
-     	String url ="http://www.ufcstats.com/statistics/events/completed?page=";
+    String url ="http://www.ufcstats.com/statistics/events/completed?page=";
     
+    static Connection conn;
     
     
         
-    public static Fight scrapeFight( ){
-        
+    public static Fight scrapeFight(Element fighter1, Element fighter2, UFCEvent event){        
         
     }
 }

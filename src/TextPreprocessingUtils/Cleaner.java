@@ -25,14 +25,16 @@ public class Cleaner {
          return text;
     }
     
-    public static int parseNumber(Element element){
+    public static int parseInt(Element element){
         return Integer.parseInt(element.text());
-    }
+    }    
+ 
     
     public static String whiteSpaceToHyphen(String text){
         text = text.replaceAll("\\s+","-");     
         return text;
     }
+     
     
     public static double percentageToDecimal(Element element){
        return  percentageToDecimal(element.text());
@@ -43,10 +45,8 @@ public class Cleaner {
           double decimal = Double.parseDouble(text);
           decimal = decimal/100;
           return decimal;
-    }
-    
+    }   
  
-    
     public static String getNumberAndHyphen(String text){
         text = text.replaceAll("([^0-9|-])+","").trim();
         return text;

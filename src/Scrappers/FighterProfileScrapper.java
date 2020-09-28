@@ -114,7 +114,7 @@ public class FighterProfileScrapper {
             String value = biographyValues.get(i).text();
             System.out.println(label + ": " + value);
             if(label.contains("AGE")){
-                fighter.dob = LocalDate.now().getYear() - Cleaner.parseNumber(biographyValues.get(i));
+                fighter.dob = LocalDate.now().getYear() - Cleaner.parseInt(biographyValues.get(i));
             }else if(label.contains("HEIGHT")){
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
             }else if(label.contains("WEIGHT")){
