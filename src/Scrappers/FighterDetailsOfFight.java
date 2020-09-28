@@ -16,13 +16,21 @@ import java.time.format.DateTimeFormatter;
  */
 public class FighterDetailsOfFight {
     String fighter;
-    Method [] outcomeOfLastFourFights;
+    String [] outcomeOfLastFourFights;
     LocalDate eventDate;
-    int numOfBonusesInLastThreeYears;
+    int numOfBonusesInRecentYears;
     int winsAtTimeOfEvent;
     int lossesAtTimeOfEvent;    
+    int currentWins;
+    int currentLoses;
+    @Override
+    public String toString() {
+        return "FighterDetailsOfFight{" + "fighter=" + fighter + ", outcomeOfLastFourFights=" + outcomeOfLastFourFights + ", eventDate=" + eventDate + ", numOfBonusesInRecentYears=" + numOfBonusesInRecentYears + ", winsAtTimeOfEvent=" + winsAtTimeOfEvent + ", lossesAtTimeOfEvent=" + lossesAtTimeOfEvent + ", layOffTimeMonths=" + layOffTimeMonths + ", submissionLosses=" + submissionLosses + ", tkoLosses=" + tkoLosses + ", tkoWins=" + tkoWins + ", submissionWins=" + submissionWins + ", decWins=" + decWins + ", declosses=" + declosses + '}';
+    }
     int layOffTimeMonths;    
     int submissionLosses;
+    
+    
     int tkoLosses;
     int tkoWins;
     int submissionWins;
@@ -31,7 +39,9 @@ public class FighterDetailsOfFight {
     
     
     public FighterDetailsOfFight(String fighterName, LocalDate date){
-        
+        fighter = fighterName;
+        eventDate = date;
+        this.outcomeOfLastFourFights = new String[] {"NA","NA","NA","NA"};
     }
     
     

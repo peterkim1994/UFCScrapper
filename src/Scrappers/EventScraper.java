@@ -31,12 +31,13 @@ public class EventScraper {
     
    static Connection conn;      
    
-   FighterProfileScrapper fighterScraper;
+  // FighterProfileScrapper fighterScraper;
+   
    public static void main(String[] args) {
         scrapeEvent(1);
    }
    
-   
+   //Crawls the main event listings page
    public static void scrapeEvent(int page){
        	String url ="http://www.ufcstats.com/statistics/events/completed?page="+page;
         Document eventsPage = Jsoup.connect(url).get(); // URL shortened!	
@@ -47,6 +48,7 @@ public class EventScraper {
         scrapeEventPage("http://www.ufcstats.com/event-details/805ad1801eb26abb");        
    }
    
+   //crawls a single event
    public static void scrapeEventPage(String url){//num attendence vs num fights to scrape  
        Document eventPage = Jsoup.connect(url).get();       
        Elements eventDetails = eventPage.getElementsByClass("b-list__box-list-item");     

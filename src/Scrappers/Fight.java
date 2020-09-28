@@ -20,12 +20,6 @@ public class Fight {
         protected int methodOfOutcome;        
         
         
-        
-        
-        
-        
-        
-        
 //        public static void main(String[] args) {
 //                Fight x = new Fight();
 //                x.date = LocalDate.parse("2019-10-25");
