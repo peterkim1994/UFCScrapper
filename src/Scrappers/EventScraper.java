@@ -81,14 +81,13 @@ public class EventScraper {
           if(order){
               Element winner = fighters.get(i);
               Element loser = fighters.get(i+1);
-              FightScrapper.scrapeFight(winner, loser, event);
+              FightScrapper.scrapeFight(winner, loser, order, event);
           }else{
               Element winner = fighters.get(i+1);
               Element loser = fighters.get(i);
-              FightScrapper.scrapeFight(loser,winner, event);
+              FightScrapper.scrapeFight(loser,winner, order, event);
           }
-       } 
-       
+       }
    }
    
    

@@ -21,7 +21,9 @@ public class FightScrapper {
     
     
         
-    public static Fight scrapeFight(Element fighter1, Element fighter2, UFCEvent event){        
+    public static Fight scrapeFight(Element fighter1, Element fighter2, boolean fighter1Won, UFCEvent event){   
         
     }
+    
+    
 }

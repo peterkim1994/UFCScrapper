@@ -17,9 +17,9 @@ public class Fight {
         
         protected int roundEnded;              
 	protected boolean win;        
-        protected int methodOfOutcome;
+        protected int methodOfOutcome;        
         
-  //      protected 
+        
         
         
         

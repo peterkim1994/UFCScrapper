@@ -153,9 +153,6 @@ public class FighterProfileScrapper {
         fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
         fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
         System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
-        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());                     
-         
-            
-      	
+        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
     }
 }
