@@ -29,10 +29,12 @@ public class Crawler {
     
     
     public static void main(String[] args){
-        connectToDB();
-        EventScraper.conn = conn;      
-        FightScrapper.conn = conn;
-        FighterProfileScrapper.conn = conn;        
+        DataBaseMessenger db = new DataBaseMessenger();
+        db.connectToDB();
+        EventScraper.db =  db;      
+        FightScrapper.db = db;
+        FighterProfileScrapper.db = db;        
+        EventScraper.scrapeEvent(1);
         
     }
     

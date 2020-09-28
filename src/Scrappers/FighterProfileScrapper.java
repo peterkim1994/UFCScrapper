@@ -36,9 +36,9 @@ public class FighterProfileScrapper {
    //     Fighter fighter = new Fighter("name");
           // FighterProfileScrapper x = new FighterProfileScrapper();
       //  scrapeUFCprofile("tito ortiz",fighter);
-      PreparedStatement x = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
-        for(int i = 0; i <31; i++)
-            System.out.print("?,");   
+   //   PreparedStatement x = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
+  //      for(int i = 0; i <31; i++)
+    //        System.out.print("?,");  
    
     }
    
@@ -67,14 +67,14 @@ public class FighterProfileScrapper {
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.parseText(name);       
        if(!dataBaseContains(fighterName)){
-           Fighter fighter = new Fighter("name");        
+           Fighter fighter = new Fighter(fighterName);        
            scrapeUFCprofile(fighter);   
        }
    }    
     public static void scrapeUFCprofile(Fighter fighter) throws IOException, SQLException{       
           
         String name = Cleaner.whiteSpaceToHyphen(fighter.name);
-
+        System.out.println(name);
         String url = "https://www.ufc.com/athlete/" + name;
         Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
 

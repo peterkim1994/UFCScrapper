@@ -6,6 +6,7 @@
 package Scrappers;
 
 import TextPreprocessingUtils.Cleaner;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class EventScraper {
     
-   static Connection conn;      
+   static DataBaseMessenger db;   
    
   // FighterProfileScrapper fighterScraper;
    
@@ -45,11 +46,11 @@ public class EventScraper {
         for(Element event: names){							   
             String x = event.attr("href");                				   							   
         }
-        scrapeEventPage("http://www.ufcstats.com/event-details/805ad1801eb26abb");        
+        scrapeEventPage("http://www.ufcstats.com/event-details/a79bfbc01b2264d6");        
    }
    
    //crawls a single event
-   public static void scrapeEventPage(String url){//num attendence vs num fights to scrape  
+   public static void scrapeEventPage(String url) throws IOException{//num attendence vs num fights to scrape  
        Document eventPage = Jsoup.connect(url).get();       
        Elements eventDetails = eventPage.getElementsByClass("b-list__box-list-item");     
        
@@ -83,16 +84,14 @@ public class EventScraper {
           if(order){
               Element winner = fighters.get(i);
               Element loser = fighters.get(i+1);
-              FightScrapper.scrapeFight(winner, loser, order, event);
+              FightScrapper.scrapeFight(winner, loser, order, event);              
           }else{
               Element winner = fighters.get(i+1);
               Element loser = fighters.get(i);
               FightScrapper.scrapeFight(loser,winner, order, event);
           }
        }
-   }
-   
-   
+   }  
    
    public static int calcNumFightsToScrape(int attendence){
        if(attendence>15000){

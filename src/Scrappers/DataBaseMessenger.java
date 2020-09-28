@@ -24,33 +24,39 @@ import java.util.logging.Logger;
 public class DataBaseMessenger {
  
 
-   static Connection conn;
-   static String url = "jdbc:derby://localhost:1527/UFC;";
+   Connection conn;
+   String url = "jdbc:derby://localhost:1527/UFC;";
    //String url = "jdbc:derby:UFC;";
-   static String user = "peterKim";
-   static String password = "peterkim";  
-   static PreparedStatement fighterInsert;
-   static PreparedStatement getFighter;
+   String user = "peterKim";
+   String password = "peterkim";  
+   PreparedStatement fighterInsert;
+   PreparedStatement getFighter;
+   PreparedStatement fighterEventDetailInsert;
    final int NUM_VALS = 31;
    
-   static String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME,STANCE,DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH,LEGREACH, WINS, LOSSES, STRIKESLANDED,"
-           + " STRIKING ACCURACY, STRIKESABSORBED,STIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTINGTIME,"
-           + "STRIKESSTANDING,CLINCHSTRKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION) ";
-   static String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";         
+   final String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME, STANCE, DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH, WINS, LOSSES, STRIKESLANDED,"
+           + " STRIKINGACCURACY, STRIKESABSORBED, STRIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTTIME,"
+           + "STRIKESSTANDING,CLINCHSTRIKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION,LEGREACH) ";
+   final String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";         
    
-
+   final String prepedFightDetailCols = "INSERT INTO FIGHTERDETAILSOFFIGHT (FIGHTER, STANCE, PREVIOUSOUTCOME1, PREVIOUSOUTCOME2, PREVIOUSOUTCOME3, PREVIOUSOUTCOME4, EVENTDATE,"
+           + "NUMBEROFBONUSESINLASTTHREEYEARS, WINSATTIMEOFEVENT, LOSESATTIMEOFEVENT,LAYOFFTIMEMONTHS)";
+   final String prepedFightDetailVals = " VALUES (?,?,?,?,?,?,?,?,?,?)";
    
+   final String         
+           
    public DataBaseMessenger(){
        try {
            connectToDB();
-           fighterInsert = conn.prepareStatement(prepedInsertCols+prepedFighterVals);
-           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTER.FIGHTERNAME = ?");
+           fighterInsert = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
+           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTERNAME = ?");
+           fighterEventDetailInsert = conn.prepareStatement(prepedFightDetailCols+ prepedFightDetailVals);
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
    }
    
-   public static Fighter getFighter(String name){
+   public Fighter getFighter(String name){
        try {
            name = name.trim();
            getFighter.setString(1,name);
@@ -62,8 +68,7 @@ public class DataBaseMessenger {
            fighter.homeCountry = rs.getString("COUNTRY");
            fighter.homeTown = rs.getString("HOMETOWN");
            fighter.height = rs.getInt("HEIGHT");
-           fighter.weight = rs.getInt("WEIGHT");
-         //  fighter.
+           fighter.weight = rs.getInt("WEIGHT");       
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
@@ -72,9 +77,9 @@ public class DataBaseMessenger {
    
    
    
-   public static void connectToDB(){
+   public void connectToDB(){
        try {
-            DataBaseMessenger.conn = DriverManager.getConnection(url, user, password);
+            conn = DriverManager.getConnection(url, user, password);
             System.out.println(conn.toString() + " connectected successfully");
         } catch (SQLException ex) {
             System.err.println(ex);
@@ -82,8 +87,40 @@ public class DataBaseMessenger {
         }
    }
     
-    public void insertNewFighterToDB(Fighter fighter)
+    public void insertNewFighterToDB(Fighter fighter) throws SQLException
     {
-        ;
+        fighterInsert.setString(1, fighter.name);
+        fighterInsert.setString(2,fighter.stance);
+        fighterInsert.setInt(3,fighter.dob);
+        fighterInsert.setString(4, fighter.homeTown);
+        fighterInsert.setString(5,fighter.homeCountry);
+        fighterInsert.setInt(6, fighter.height);
+        fighterInsert.setInt(7, fighter.weight);
+        fighterInsert.setInt(8, fighter.reach);
+        fighterInsert.setInt(9, fighter.wins);
+        fighterInsert.setInt(10, fighter.losses);
+        
+        fighterInsert.setDouble(11, fighter.strikesLanded);
+        fighterInsert.setDouble(12, fighter.strikingAccuracy);
+        fighterInsert.setDouble(13, fighter.strikesAbsorbed);
+        fighterInsert.setDouble(14, fighter.strikingDefence);
+        fighterInsert.setDouble(15, fighter.takeDownsLanded);
+        fighterInsert.setDouble(16, fighter.takeDownAccuracy);
+        fighterInsert.setDouble(17, fighter.takeDownDefence);
+        fighterInsert.setDouble(18, fighter.submissionAverage);
+        fighterInsert.setDouble(19, fighter.knockDownRatio);
+        fighterInsert.setDouble(20, fighter.averageFightTime);
+        
+        fighterInsert.setDouble(21, fighter.strikesStanding);
+        fighterInsert.setDouble(22, fighter.clinchStrikes);
+        fighterInsert.setDouble(23, fighter.groundStrikes);
+        fighterInsert.setDouble(24, fighter.headStrikes);
+        fighterInsert.setDouble(25, fighter.bodyStrikes);
+        fighterInsert.setDouble(26, fighter.legStrikes);
+        fighterInsert.setDouble(27, fighter.tko);
+        fighterInsert.setDouble(28, fighter.submission);
+        fighterInsert.setDouble(29, fighter.decision);
+        fighterInsert.setDouble(30, fighter.legReach);          
+        
     }
 }

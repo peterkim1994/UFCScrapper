@@ -23,10 +23,7 @@ public class FighterDetailsOfFight {
     int lossesAtTimeOfEvent;    
     int currentWins;
     int currentLoses;
-    @Override
-    public String toString() {
-        return "FighterDetailsOfFight{" + "fighter=" + fighter + ", outcomeOfLastFourFights=" + outcomeOfLastFourFights + ", eventDate=" + eventDate + ", numOfBonusesInRecentYears=" + numOfBonusesInRecentYears + ", winsAtTimeOfEvent=" + winsAtTimeOfEvent + ", lossesAtTimeOfEvent=" + lossesAtTimeOfEvent + ", layOffTimeMonths=" + layOffTimeMonths + ", submissionLosses=" + submissionLosses + ", tkoLosses=" + tkoLosses + ", tkoWins=" + tkoWins + ", submissionWins=" + submissionWins + ", decWins=" + decWins + ", declosses=" + declosses + '}';
-    }
+   
     int layOffTimeMonths;    
     int submissionLosses;
     
@@ -44,6 +41,10 @@ public class FighterDetailsOfFight {
         this.outcomeOfLastFourFights = new String[] {"NA","NA","NA","NA"};
     }
     
+     @Override
+    public String toString() {
+        return "FighterDetailsOfFight{" + "fighter=" + fighter + ", outcomeOfLastFourFights=" + outcomeOfLastFourFights + ", eventDate=" + eventDate + ", numOfBonusesInRecentYears=" + numOfBonusesInRecentYears + ", winsAtTimeOfEvent=" + winsAtTimeOfEvent + ", lossesAtTimeOfEvent=" + lossesAtTimeOfEvent + ", layOffTimeMonths=" + layOffTimeMonths + ", submissionLosses=" + submissionLosses + ", tkoLosses=" + tkoLosses + ", tkoWins=" + tkoWins + ", submissionWins=" + submissionWins + ", decWins=" + decWins + ", declosses=" + declosses + '}';
+    }
     
     public static void main(String[] args) throws ParseException {
      //   LocalDate x = LocalDate.parse("September-19-2020");
@@ -53,10 +54,10 @@ public class FighterDetailsOfFight {
     }    
     
     //Calculates number of months from objects date since the input date
-    public int calculateRingRust(LocalDate lastFight){
+    public void calculateRingRust(LocalDate lastFight){
         int yearsSince = this.eventDate.getYear()  - lastFight.getYear();
         int monthsSince = yearsSince*12;
         monthsSince +=  (this.eventDate.getMonthValue() - lastFight.getMonthValue());
-        return monthsSince;
+        this.layOffTimeMonths = monthsSince;
     }
 }
