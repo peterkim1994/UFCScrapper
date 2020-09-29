@@ -13,13 +13,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -32,14 +25,11 @@ import java.util.logging.Logger;
  */
 public class EventScraper {
     
-   static DataBaseMessenger db;   
-   
-  // FighterProfileScrapper fighterScraper;
-   
+   private static int numChampionFights; 
+    
    public static void main(String[] args) {
         scrapeEvent(1);
-   }
-   
+   }   
    
    public static void scrapeEvent(int page){
        scrapeEvent(page,true);
@@ -52,9 +42,7 @@ public class EventScraper {
            Elements names = eventsPage.getElementsByClass("b-link b-link_style_black");           
            ArrayList<String> winMethod = new ArrayList<>();                   
            scrapeEventPage("http://www.ufcstats.com/event-details/a79bfbc01b2264d6", previousEvent);           
-       } catch (IOException ex) {
-           Logger.getLogger(EventScraper.class.getName()).log(Level.SEVERE, null, ex);
-       } catch (SQLException ex) {
+       } catch(IOException ex){
            Logger.getLogger(EventScraper.class.getName()).log(Level.SEVERE, null, ex);
        }
    }
@@ -77,48 +65,50 @@ public class EventScraper {
         event.country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
         event.city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);       
 
+        EventScraper.numChampionFights = eventPage.getElementsByAttributeValue("src","http://1e49bc5171d173577ecd-1323f4090557a33db01577564f60846c.r80.cf1.rackcdn.com/belt.png").size();
+        //for(Element xx: x)
+        //    System.out.println(xx.outerHtml());
         Elements fightersOnEvent = eventPage.getElementsByClass("b-link b-link_style_black");      
         ArrayList<Element> fighters = new ArrayList<>();
         Queue<String> fightOutcomes = new LinkedList<>();
-        getEventInfo(fighters, fightersOnEvent,fightOutcomes, eventPage, isPreviousEvent);
+        
+        getEventInfo(fighters, fightersOnEvent, fightOutcomes, eventPage, isPreviousEvent);//updates the lists
         if(isPreviousEvent)
             scrapeTheFights(event,fighters,fightOutcomes);
         else
-            scrapeUpComingFights(event,fighters);
-       
+            scrapeUpComingFights(event,fighters);       
    }  
    
    //Scrapes the fights contained in a event
    public static void scrapeTheFights(UFCEvent event, ArrayList<Element> fighters, Queue<String> fightOutcomes) throws IOException{
      //  int numFights = calcNumFightsToScrape(event.attendance);
-       int numFights = 10;
+       int numFights = fighters.size()/2;
        Random rand = new Random();
        boolean didFighter1Win;//if true, winning fighter will be the first input parameter for scrapeFight function
        for(int i=0; i< numFights*2 ; i += 2){
-            String outcome = fightOutcomes.poll();
-            didFighter1Win = rand.nextBoolean();            
-            Element winner = fighters.get(i);
-            Element loser = fighters.get(i+1);            
-          //  Fight fight = new Fight;
-            if(didFighter1Win){
-              fight = FightScrapper.scrapeFight(winner, loser, event, fight);
-            }else{
-              fight = FightScrapper.scrapeFight(loser,winner, event, fight);
-            }
-            if(i<2 && fight != null){//FightScrapper.scrapeFight will return null if the fighters are new to the UFC and dont contain reliable data
+            String methodOfOutcome = fightOutcomes.poll();
+            didFighter1Win = rand.nextBoolean();
+            Fight fight = new Fight(methodOfOutcome, event, didFighter1Win);
+            if(i < EventScraper.numChampionFights && fight != null){//FightScrapper.scrapeFight will return null if the fighters are new to the UFC and dont contain reliable data
                 fight.championShipRounds = true;
-            }
-         //   db.insertFightEvent(fight);
+            }       
+            Element winner = fighters.get(i);
+            Element loser = fighters.get(i+1);              
+            if(didFighter1Win){
+                FightScrapper.scrapeFight(winner, loser, fight);             
+            }else{
+                FightScrapper.scrapeFight(loser,winner, fight);               
+            }   
        }
    }
    
    //For upcoming events the outcome is not known, so method is always "HASNT HAPPENED" 
-   public static void scrapeUpComingFights(UFCEvent event, ArrayList<Element> fighters) throws IOException, SQLException{
+   public static void scrapeUpComingFights(UFCEvent event, ArrayList<Element> fighters){
        int numFights = calcNumFightsToScrape(event.attendance);
        for(int i=0; i< numFights*2 ; i += 2){            
             Element redCorner = fighters.get(i);
             Element blueCorner = fighters.get(i+1);
-            FightScrapper.scrapeFight(redCorner,blueCorner,event,"HASNT HAPPENED", false);
+         //   FightScrapper.scrapeFight(redCorner,blueCorner,event,"HASNT HAPPENED", false);
        }
    }
    
@@ -153,7 +143,7 @@ public class EventScraper {
        }
    }
    
-      public static ArrayList<Fight> getEventInfo(ArrayList<Element> fighters, ArrayList<Element> fightersOnEvent, Queue<String> fightOutcomes, Document eventPage){       
+    public static void getEventInfo(ArrayList<Element> fighters, ArrayList<Element> fightersOnEvent, Queue<String> fightOutcomes, Document eventPage){       
         int counter = 0;   
         for(int i=0; i<fightersOnEvent.size(); i++){
             Element link = fightersOnEvent.get(i);

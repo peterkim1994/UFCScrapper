@@ -26,23 +26,18 @@ public class FightScrapper {
     String url ="http://www.ufcstats.com/statistics/events/completed?page=";    
     static DataBaseMessenger db; 
     
-    public static void main(String[] args) {       
-        DataBaseMessenger db = new DataBaseMessenger();
-        db.connectToDB();
-        EventScraper.db =  db;      
-        FightScrapper.db = db;
-        FighterProfileScrapper.db = db;  
+    public static void main(String[] args) {   
         EventScraper.scrapeEvent(1);
-    //    FighterProfileScrapper.scrapeUFCprofile(new Fighter("paul felder"));
+  
     }
     
-    public static Fight scrapeFight(Element fighter1, Element fighter2, Fight fight){  
-        try{
-            
+    public static void scrapeFight(Element fighter1, Element fighter2, Fight fight){  
+        try{            
             FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, fight.event.date);
             FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, fight.event.date);    
-            
-          //  db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);             
+            fight.fighter1 = fighter1Details;
+            fight.fighter2 = fighter2Details;
+            DataBaseMessenger.insertFighterEventDetails(fight);             
         }catch(UnsupportedOperationException e){//if the fight is a debut, then this exception will be thrown to prevent the low quality data being inserted to database
             System.out.println(e);
         } catch (IOException ex) {
@@ -65,7 +60,7 @@ public class FightScrapper {
         Elements tableRows = fighterStatPage.getElementsByClass("b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click");    
         boolean startScraping = false;
         int recentFightCounter = details.outcomeOfLastFourFights.length;       
-        
+        boolean ringRustCalculated =false;   
         for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();
@@ -74,7 +69,7 @@ public class FightScrapper {
             LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
             LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);            
             boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event
-            boolean ringRustCalculated =false;                 
+                          
             if(startScraping){
                 details.numUFCFights++;
                 String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)").text().trim();                
@@ -106,8 +101,8 @@ public class FightScrapper {
             }
         }
         System.out.println(details);
-        if(details.numUFCFights<2){
-            throw new UnsupportedOperationException("This fighters the fighters debut in the UFC, hence fight will not be scraped");
+        if(details.numUFCFights < 2){
+            throw new UnsupportedOperationException("This fight was the fighters debut or 2nd fight in the UFC, fight data will not be collected");
         }
         return details;
     }

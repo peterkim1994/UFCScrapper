@@ -5,10 +5,6 @@
  */
 package Scrappers;
 
-import static Scrappers.FighterProfileScrapper.conn;
-import static Scrappers.FighterProfileScrapper.password;
-import static Scrappers.FighterProfileScrapper.url;
-import static Scrappers.FighterProfileScrapper.user;
 import java.sql.Connection;
 import java.sql.Date;
 
@@ -26,8 +22,7 @@ import java.util.logging.Logger;
  */
 public class DataBaseMessenger {
  
-   //private static DataBaseMessenger instance;
-   private final static DataBaseMessenger instance = new DataBaseMessenger();//starts the connection to DB 
+   //private static DataBaseMessenger instance;   
    private static Connection conn;
    private static String url = "jdbc:derby://localhost:1527/UFC;";
    //String url = "jdbc:derby:UFC;";
@@ -38,6 +33,7 @@ public class DataBaseMessenger {
  //  PreparedStatement fighterEventDetailInsert;
    private static PreparedStatement insertFightEvent;
    private static final int NUM_VALS = 31;
+   private final static DataBaseMessenger instance = new DataBaseMessenger();//starts the connection to DB 
    
    private static final String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME, STANCE, DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH, WINS, LOSSES, STRIKESLANDED,"
            + " STRIKINGACCURACY, STRIKESABSORBED, STRIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTTIME,"
@@ -80,6 +76,7 @@ public class DataBaseMessenger {
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
+       return true;
    }
 
    
@@ -94,11 +91,39 @@ public class DataBaseMessenger {
    }
    
    public static void insertFighterEventDetails(Fight fight){
-        try {
+        try {            
             insertFightEvent.setDate(1, Date.valueOf(fight.event.date));
             insertFightEvent.setString(2, fight.event.city);
-            insertFightEvent.setString(3, fight.event.country);
-          //  insertFightEvent.setInt(4, url);
+            insertFightEvent.setString(3, fight.event.country);            
+            insertFightEvent.setInt(4, fight.getNumRounds());
+            
+            FighterDetailsOfFight f1 = fight.fighter1;
+            insertFightEvent.setString(5,f1.fighter);
+            insertFightEvent.setString(6,f1.outcomeOfLastFourFights[0]);
+            insertFightEvent.setString(7,f1.outcomeOfLastFourFights[1]);
+            insertFightEvent.setString(8,f1.outcomeOfLastFourFights[2]);
+            insertFightEvent.setString(9,f1.outcomeOfLastFourFights[3]);
+            insertFightEvent.setInt(10,f1.numUFCFights);
+            insertFightEvent.setInt(11,f1.numOfBonusesInRecentYears);
+            insertFightEvent.setInt(12,f1.winsAtTimeOfEvent);
+            insertFightEvent.setInt(13,f1.lossesAtTimeOfEvent);
+            insertFightEvent.setInt(14, f1.layOffTimeMonths);
+            
+            FighterDetailsOfFight f2 = fight.fighter2;
+            insertFightEvent.setString(15, f2.fighter);
+            insertFightEvent.setString(16,f2.outcomeOfLastFourFights[0]);
+            insertFightEvent.setString(17,f2.outcomeOfLastFourFights[1]);
+            insertFightEvent.setString(18,f2.outcomeOfLastFourFights[2]);
+            insertFightEvent.setString(19,f2.outcomeOfLastFourFights[3]);
+            insertFightEvent.setInt(20,f2.numUFCFights);
+            insertFightEvent.setInt(21,f2.numOfBonusesInRecentYears);
+            insertFightEvent.setInt(22,f2.winsAtTimeOfEvent);
+            insertFightEvent.setInt(23,f2.lossesAtTimeOfEvent);
+            insertFightEvent.setInt(24, f2.layOffTimeMonths);
+            
+            insertFightEvent.setString(25, fight.methodOfOutcome);
+            insertFightEvent.setString(26,fight.getWinner());
+            insertFightEvent.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -5,9 +5,8 @@
  */
 package Scrappers;
 
-import UFC.Method;
+
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 /**

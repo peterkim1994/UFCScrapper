@@ -34,9 +34,7 @@ public class FighterProfileScrapper {
 
     public static void main(String[] args){             
         Document fighterPage;
-        try {
-            DataBaseMessenger db = new DataBaseMessenger();
-            FighterProfileScrapper.db =db;
+        try {      
             fighterPage = Jsoup.connect("http://www.ufcstats.com/fighter-details/1eff7bc0f815b270").get();
             Elements x = fighterPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
             Elements statVals2 = fighterPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");  
@@ -44,28 +42,17 @@ public class FighterProfileScrapper {
             int i =0;
             for(Element xx: x){     
                System.out.print(i++ +"   ");
-               System.out.println(xx.text());
-                
+               System.out.println(xx.text());                
              }
             for(Element e: statVals2){
-           //     System.out.println(e.text());
+                System.out.println(e.text());
             }
         } catch (IOException ex) {
             Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
        
     }
-   
-    public FighterProfileScrapper(DataBaseMessenger db){
-        this.db = db;
-    }
-    
-   public FighterProfileScrapper(){
-        
-   }
-   
 
-   
    public static boolean dataBaseContains(String name){       
       return DataBaseMessenger.checkDBContainsFighter(name);       
    }
@@ -73,26 +60,33 @@ public class FighterProfileScrapper {
    public static void scrapeFighter(Document fighterStatPage){       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.parseText(name);       
-       if(!dataBaseContains(fighterName)){
-           Fighter fighter = new Fighter(fighterName);        
-           scrapeUFCprofile(fighter); 
-           Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
-           fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
-           fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
-           fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
-           fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
-           fighter.takeDownAccuracy = Cleaner.percentageToDecimal(statVals.get(9));
-           fighter.takeDownDefence = Cleaner.percentageToDecimal(statVals.get(10));
-           Elements statVals2 = fighterStatPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");
-           fighter.stance = statVals2.get(0).ownText().trim();
-           fighter.strikingDefence = Cleaner.percentageToDecimal(statVals2.get(1));
-           fighter.submissionAverage = Double.parseDouble(statVals2.get(1).ownText().trim());
-       }
+       if(!dataBaseContains(fighterName))
+           try {
+               Fighter fighter = new Fighter(fighterName);
+               scrapeUFCprofile(fighter);
+               Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
+               fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
+               fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
+               fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
+               fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
+               fighter.takeDownAccuracy = Cleaner.percentageToDecimal(statVals.get(9));
+               fighter.takeDownDefence = Cleaner.percentageToDecimal(statVals.get(10));
+               Elements statVals2 = fighterStatPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");
+               fighter.stance = statVals2.get(0).ownText().trim();
+               fighter.strikingDefence = Cleaner.percentageToDecimal(statVals2.get(1));
+               fighter.submissionAverage = Double.parseDouble(statVals2.get(2).ownText().trim());
+               DataBaseMessenger.insertNewFighterToDB(fighter);
+           } catch (SQLException ex) {
+               Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (IOException ex) {
+               Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
+           }
+       
    }    
     public static void scrapeUFCprofile(Fighter fighter) throws IOException{       
           
         String name = Cleaner.whiteSpaceToHyphen(fighter.name);
-        System.out.println(name);
+      //  System.out.println(name);
         String url = "https://www.ufc.com/athlete/" + name;
         Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
 
@@ -154,23 +148,23 @@ public class FighterProfileScrapper {
             System.out.println(e.text());
             System.out.println(Cleaner.extractPercentage(e));
         }
-        fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
-        fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
-        fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
-
-        fighter.tko = Cleaner.extractPercentage(percentageStats.get(3));
-        fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
-        fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
-
-        fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
-        fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
-        fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));            
-
-
-        fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
-        fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
-        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
-        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
+        try{
+            fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
+            fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
+            fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
+            fighter.tko = Cleaner.extractPercentage(percentageStats.get(3));
+            fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
+            fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
+            fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
+            fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
+            fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));             
+            fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
+            fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
+            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
+            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
+        }catch(IndexOutOfBoundsException e){
+            throw new UnsupportedOperationException("Fighter: " + fighter.name + " does not enough data to use");
+        }
     }
     
 

@@ -17,5 +17,5 @@ public class UFCEvent {
     String country;
     String city;
     LocalDate date;
-    ArrayList<Fight> fights;
+  //  ArrayList<Fight> fights;
 }

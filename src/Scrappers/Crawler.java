@@ -28,14 +28,8 @@ public class Crawler {
     static String password = "peterkim";  
     
     
-    public static void main(String[] args){
-        DataBaseMessenger db = new DataBaseMessenger();
-        db.connectToDB();
-        EventScraper.db =  db;      
-        FightScrapper.db = db;
-        FighterProfileScrapper.db = db;        
-        EventScraper.scrapeEvent(1);
-        
+    public static void main(String[] args){     
+        EventScraper.scrapeEvent(1);        
     }
     
     
