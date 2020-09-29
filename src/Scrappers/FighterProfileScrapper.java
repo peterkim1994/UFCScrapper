@@ -12,14 +12,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,15 +50,17 @@ public class FighterProfileScrapper {
       return DataBaseMessenger.checkDBContainsFighter(name);       
    }
    
-   public static void scrapeFighter(Document fighterStatPage){       
+   public static void scrapeFighter(Document fighterStatPage)throws UnsupportedOperationException{       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.parseText(name);       
        if(!dataBaseContains(fighterName))
            try {
                Fighter fighter = new Fighter(fighterName);
+               System.out.println(fighterName);
                scrapeUFCprofile(fighter);
                Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
                fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
+               System.out.println(fighter.name + " strikesLanded = " + fighter.strikesLanded);
                fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
                fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
                fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
@@ -131,9 +126,13 @@ public class FighterProfileScrapper {
         
         if(!legReachInfoAvailable)
             fighter.legReach = 0;
-        
-        fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",1);
-        fighter.homeTown = Cleaner.splitThenExtract(biographyValues.get(1),",", 0);        
+        try{
+            fighter.homeTown = Cleaner.splitThenExtract(biographyValues.get(1),",", 0);
+            fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",1);
+        }catch(ArrayIndexOutOfBoundsException e){
+            fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",0);
+        }
+                
 
         Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
         System.out.println(fighterHistory.text());
@@ -143,11 +142,7 @@ public class FighterProfileScrapper {
         int wins = Integer.parseInt(record[0]);
         int losses = Integer.parseInt(record[1]);            
 
-        Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value");
-        for(Element e: percentageStats){
-            System.out.println(e.text());
-            System.out.println(Cleaner.extractPercentage(e));
-        }
+        Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value"); 
         try{
             fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
             fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));

@@ -144,6 +144,7 @@ public class DataBaseMessenger {
         fighterInsert.setInt(10, fighter.losses);
         
         fighterInsert.setDouble(11, fighter.strikesLanded);
+        System.out.println("DB==============================================     "+ fighter.strikesLanded);
         fighterInsert.setDouble(12, fighter.strikingAccuracy);
         fighterInsert.setDouble(13, fighter.strikesAbsorbed);
         fighterInsert.setDouble(14, fighter.strikingDefence);

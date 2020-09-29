@@ -27,7 +27,7 @@ public class FightScrapper {
     static DataBaseMessenger db; 
     
     public static void main(String[] args) {   
-        EventScraper.scrapeEvent(1);
+        EventCrawler.scrapeEvent(1);
   
     }
     

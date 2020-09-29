@@ -5,10 +5,6 @@
  */
 package Scrappers;
 
-import static Scrappers.FighterProfileScrapper.conn;
-import static Scrappers.FighterProfileScrapper.password;
-import static Scrappers.FighterProfileScrapper.url;
-import static Scrappers.FighterProfileScrapper.user;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,7 +25,7 @@ public class Crawler {
     
     
     public static void main(String[] args){     
-        EventScraper.scrapeEvent(1);        
+        EventCrawler.scrapeEvent(1);        
     }
     
     

@@ -1,8 +1,5 @@
 package Scrappers;
 
-import UFC.FightStat;
-import java.util.Date;
-
 public class Fighter {
 	
     protected String name;

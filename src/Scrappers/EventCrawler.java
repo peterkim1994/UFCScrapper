@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author peter
  */
-public class EventScraper {
+public class EventCrawler {
     
    private static int numChampionFights; 
     
@@ -43,7 +43,7 @@ public class EventScraper {
            ArrayList<String> winMethod = new ArrayList<>();                   
            scrapeEventPage("http://www.ufcstats.com/event-details/a79bfbc01b2264d6", previousEvent);           
        } catch(IOException ex){
-           Logger.getLogger(EventScraper.class.getName()).log(Level.SEVERE, null, ex);
+           Logger.getLogger(EventCrawler.class.getName()).log(Level.SEVERE, null, ex);
        }
    }
    
@@ -65,7 +65,7 @@ public class EventScraper {
         event.country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
         event.city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);       
 
-        EventScraper.numChampionFights = eventPage.getElementsByAttributeValue("src","http://1e49bc5171d173577ecd-1323f4090557a33db01577564f60846c.r80.cf1.rackcdn.com/belt.png").size();
+        EventCrawler.numChampionFights = eventPage.getElementsByAttributeValue("src","http://1e49bc5171d173577ecd-1323f4090557a33db01577564f60846c.r80.cf1.rackcdn.com/belt.png").size();
         //for(Element xx: x)
         //    System.out.println(xx.outerHtml());
         Elements fightersOnEvent = eventPage.getElementsByClass("b-link b-link_style_black");      
@@ -89,7 +89,7 @@ public class EventScraper {
             String methodOfOutcome = fightOutcomes.poll();
             didFighter1Win = rand.nextBoolean();
             Fight fight = new Fight(methodOfOutcome, event, didFighter1Win);
-            if(i < EventScraper.numChampionFights && fight != null){//FightScrapper.scrapeFight will return null if the fighters are new to the UFC and dont contain reliable data
+            if(i < EventCrawler.numChampionFights && fight != null){//FightScrapper.scrapeFight will return null if the fighters are new to the UFC and dont contain reliable data
                 fight.championShipRounds = true;
             }       
             Element winner = fighters.get(i);
