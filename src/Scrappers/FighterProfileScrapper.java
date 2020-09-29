@@ -143,8 +143,8 @@ public class FighterProfileScrapper {
         String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
      //   System.out.println(recordClean);
         String [] record = recordClean.split("-");
-        int wins = Integer.parseInt(record[0]);
-        int losses = Integer.parseInt(record[1]);            
+        fighter.wins = Integer.parseInt(record[0]);
+        fighter.losses = Integer.parseInt(record[1]);            
 
         Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value"); 
         try{
