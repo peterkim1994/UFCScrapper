@@ -4,28 +4,22 @@ import Scrappers.Fighter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class Fight {	
-	
-	FighterDetailsOfFight fighter1;
-        FighterDetailsOfFight fighter2;
-	
-	protected boolean mainEvent;
-        protected boolean championShipRounds;
-	protected LocalDate date; 
-        protected String country;
-        protected String province;	
+public class Fight {
+	protected FighterDetailsOfFight fighter1;
+        protected FighterDetailsOfFight fighter2;	
+        protected UFCEvent event;
+        protected boolean championShipRounds;                      
+	protected boolean fighter1Won;        
+        protected String methodOfOutcome;        
         
-        protected int roundEnded;              
-	protected boolean win;        
-        protected int methodOfOutcome;        
+        public Fight(String method, UFCEvent event){
+            this.methodOfOutcome = method;
+            this.event = event;
+            this.championShipRounds = false;
+            this.fighter1Won = fighter1Won;
+        }
         
-        
-//        public static void main(String[] args) {
-//                Fight x = new Fight();
-//                x.date = LocalDate.parse("2019-10-25");
-//                int d = x.calculateRingRust(LocalDate.parse("2011-11-25"));
-//                System.out.println(d);        
-//        }
-        
-
+        public Fight(){
+            championShipRounds = false;
+        }
 }

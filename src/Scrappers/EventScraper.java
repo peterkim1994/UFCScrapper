@@ -60,7 +60,7 @@ public class EventScraper {
    }
    
    //crawls a single event
-   public static void scrapeEventPage(String url, boolean isPreviousEvent) throws IOException, SQLException{//num attendence vs num fights to scrape  
+   public static void scrapeEventPage(String url, boolean isPreviousEvent) throws IOException{//num attendence vs num fights to scrape  
         Document eventPage = Jsoup.connect(url).get();       
         Elements eventDetails = eventPage.getElementsByClass("b-list__box-list-item");  
 
@@ -86,39 +86,33 @@ public class EventScraper {
         else
             scrapeUpComingFights(event,fighters);
        
-//       int numFights = calcNumFightsToScrape(event.attendance);
-//       Random rand = new Random();
-//       boolean didFighter1Win;//if true, winning fighter will be the first input parameter for scrapeFight function
-//       for(int i=0; i< numFights*2 ; i += 2){
-//          didFighter1Win = rand.nextBoolean();
-//          String outcome = fightOutcomes.poll();
-//          Element winner = fighters.get(i);
-//          Element loser = fighters.get(i+1);
-//          if(didFighter1Win){ 
-//              FightScrapper.scrapeFight(winner, loser,event,outcome,didFighter1Win);              
-//          }else{
-//              FightScrapper.scrapeFight(loser,winner, event,outcome,didFighter1Win);
-//          }
-//       }
    }  
    
-   public static void scrapeTheFights(UFCEvent event, ArrayList<Element> fighters, Queue<String> fightOutcomes) throws IOException, SQLException{
-       int numFights = calcNumFightsToScrape(event.attendance);
+   //Scrapes the fights contained in a event
+   public static void scrapeTheFights(UFCEvent event, ArrayList<Element> fighters, Queue<String> fightOutcomes) throws IOException{
+     //  int numFights = calcNumFightsToScrape(event.attendance);
+       int numFights = 10;
        Random rand = new Random();
        boolean didFighter1Win;//if true, winning fighter will be the first input parameter for scrapeFight function
        for(int i=0; i< numFights*2 ; i += 2){
-            didFighter1Win = rand.nextBoolean();
             String outcome = fightOutcomes.poll();
+            didFighter1Win = rand.nextBoolean();            
             Element winner = fighters.get(i);
-            Element loser = fighters.get(i+1);
+            Element loser = fighters.get(i+1);            
+          //  Fight fight = new Fight;
             if(didFighter1Win){
-              FightScrapper.scrapeFight(winner, loser, event, outcome, didFighter1Win);
+              fight = FightScrapper.scrapeFight(winner, loser, event, fight);
             }else{
-              FightScrapper.scrapeFight(loser,winner, event, outcome, didFighter1Win);
+              fight = FightScrapper.scrapeFight(loser,winner, event, fight);
             }
+            if(i<2 && fight != null){//FightScrapper.scrapeFight will return null if the fighters are new to the UFC and dont contain reliable data
+                fight.championShipRounds = true;
+            }
+         //   db.insertFightEvent(fight);
        }
    }
    
+   //For upcoming events the outcome is not known, so method is always "HASNT HAPPENED" 
    public static void scrapeUpComingFights(UFCEvent event, ArrayList<Element> fighters) throws IOException, SQLException{
        int numFights = calcNumFightsToScrape(event.attendance);
        for(int i=0; i< numFights*2 ; i += 2){            
@@ -141,6 +135,7 @@ public class EventScraper {
        }
    }
    
+   //Updates the input lists with the method of outcome, and also the fighter names and urls for a event
    public static void getEventInfo(ArrayList<Element> fighters, ArrayList<Element> fightersOnEvent,
         Queue<String> fightOutcomes, Document eventPage, boolean isPastEvent ){       
         int counter = 0;   
@@ -150,6 +145,22 @@ public class EventScraper {
                 fighters.add(link);
             }
             if(i%2 == 0 && isPastEvent){//gets the method outcome for fight
+                 counter++;
+                 Element outcome = eventPage.select("tr.js-fight-details-click.b-fight-details__table-row__hover.b-fight-details__table-row:nth-of-type("+ counter +")"
+                         + " > td.l-page_align_left.b-fight-details__table-col:nth-of-type(8) > p.b-fight-details__table-text:nth-of-type(1)").get(0); 
+                fightOutcomes.add(outcome.text());
+            }
+       }
+   }
+   
+      public static ArrayList<Fight> getEventInfo(ArrayList<Element> fighters, ArrayList<Element> fightersOnEvent, Queue<String> fightOutcomes, Document eventPage){       
+        int counter = 0;   
+        for(int i=0; i<fightersOnEvent.size(); i++){
+            Element link = fightersOnEvent.get(i);
+            if(!link.text().contains("View Matchup")){
+                fighters.add(link);
+            }
+            if(i%2 == 0){//gets the method outcome for fight
                  counter++;
                  Element outcome = eventPage.select("tr.js-fight-details-click.b-fight-details__table-row__hover.b-fight-details__table-row:nth-of-type("+ counter +")"
                          + " > td.l-page_align_left.b-fight-details__table-col:nth-of-type(8) > p.b-fight-details__table-text:nth-of-type(1)").get(0); 

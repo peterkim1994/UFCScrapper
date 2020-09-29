@@ -36,20 +36,22 @@ public class FightScrapper {
     //    FighterProfileScrapper.scrapeUFCprofile(new Fighter("paul felder"));
     }
     
-    public static Fight scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin){  
+    public static Fight scrapeFight(Element fighter1, Element fighter2, Fight fight){  
         try{
             
-            FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, event.date);
-            FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, event.date);             
-          //  db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);    
-            Fight fight= new Fight(method);
+            FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, fight.event.date);
+            FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, fight.event.date);    
+            
+          //  db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);             
         }catch(UnsupportedOperationException e){//if the fight is a debut, then this exception will be thrown to prevent the low quality data being inserted to database
             System.out.println(e);
+        } catch (IOException ex) {
+            Logger.getLogger(FightScrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     //Crawls for dynamic information of a fighter regarding a specific event
-    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException,SQLException{ 
+    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException{ 
         
         String fighterName = fighter.text().trim();
         FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);//object to encapulate info regarding fighter record history at time of fight        
@@ -64,7 +66,7 @@ public class FightScrapper {
         boolean startScraping = false;
         int recentFightCounter = details.outcomeOfLastFourFights.length;       
         
-        for(int i=0; i<tableRows.size() ; i++){
+        for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();
             System.out.println(previousFightDate + "----------");

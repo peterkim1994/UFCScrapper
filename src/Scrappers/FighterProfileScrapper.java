@@ -66,18 +66,11 @@ public class FighterProfileScrapper {
    
 
    
-   public static boolean dataBaseContains(String name) throws SQLException{       
-       Statement statement = db.conn.createStatement();
-       String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTERNAME = '" + name +"'";
-       ResultSet rs = statement.executeQuery(query);
-      // ResultSet rss = db.g
-       while(rs.next()){
-           return true;
-       }
-       return false;
+   public static boolean dataBaseContains(String name){       
+      return DataBaseMessenger.checkDBContainsFighter(name);       
    }
    
-   public static void scrapeFighter(Document fighterStatPage) throws IOException, SQLException{       
+   public static void scrapeFighter(Document fighterStatPage){       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.parseText(name);       
        if(!dataBaseContains(fighterName)){
@@ -96,7 +89,7 @@ public class FighterProfileScrapper {
            fighter.submissionAverage = Double.parseDouble(statVals2.get(1).ownText().trim());
        }
    }    
-    public static void scrapeUFCprofile(Fighter fighter) throws IOException, SQLException{       
+    public static void scrapeUFCprofile(Fighter fighter) throws IOException{       
           
         String name = Cleaner.whiteSpaceToHyphen(fighter.name);
         System.out.println(name);
@@ -111,10 +104,15 @@ public class FighterProfileScrapper {
 //        fighter.submissionAverage = Cleaner.parseDouble(fighterStats.get(3));
 //        fighter.strikingDefence = Cleaner.percentageToDecimal(fighterStats.get(4).text());
 //        fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
-        fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
-        String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
-        fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
-
+        try{
+            fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
+            String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
+            fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
+        }catch(IndexOutOfBoundsException e){
+            fighter.knockDownRatio = 0.00;
+        }catch(NumberFormatException e){
+            fighter.averageFightTime = 15.00;
+        }
         
         //Label and value pairs from the biograpy section. The structure and information contained varies per fighter so values are extracted in this fashion
         Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
