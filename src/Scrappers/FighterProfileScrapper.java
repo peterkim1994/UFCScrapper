@@ -33,13 +33,13 @@ public class FighterProfileScrapper {
             Elements statVals2 = fighterPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");  
             scrapeFighter(fighterPage);
             int i =0;
-            for(Element xx: x){     
-               System.out.print(i++ +"   ");
-               System.out.println(xx.text());                
-             }
-            for(Element e: statVals2){
-                System.out.println(e.text());
-            }
+        //    for(Element xx: x){     
+           //    System.out.print(i++ +"   ");
+             //  System.out.println(xx.text());                
+         //    }
+        //    for(Element e: statVals2){
+        //        System.out.println(e.text());
+       //     }
         } catch (IOException ex) {
             Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -107,18 +107,22 @@ public class FighterProfileScrapper {
         Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
         Elements biographyValues  = fighterPage.getElementsByClass("c-bio__text");            
         boolean legReachInfoAvailable = false;
-        
+        System.out.println("-----------------------------------------------------------------------" +biographyValues.size() );
         for (int i = 0; i < biographyValues.size(); i++) {
             String label = biographyLabels.get(i).text();
             String value = biographyValues.get(i).text();
             System.out.println(label + ": " + value);
-            if(label.contains("AGE")){
+            if(label.contains("Age")){
                 fighter.dob = LocalDate.now().getYear() - Cleaner.parseInt(biographyValues.get(i));
-            }else if(label.contains("HEIGHT")){
+                System.out.println("DOOOOOOOOOOOOOOB" + fighter.dob);
+            }else if(label.contains("Height")){
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
-            }else if(label.contains("WEIGHT")){
+            }else if(label.contains("Weight")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
-            }else if(label.contains("LEG REACH")){             
+            }else if(label.contains("Reach")){
+                fighter.reach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
+                legReachInfoAvailable = true;
+            }else if(label.contains("Leg reach")){             
                 fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
                 legReachInfoAvailable = true;
             }
@@ -135,9 +139,9 @@ public class FighterProfileScrapper {
                 
 
         Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
-        System.out.println(fighterHistory.text());
+      // System.out.println(fighterHistory.text());
         String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
-        System.out.println(recordClean);
+     //   System.out.println(recordClean);
         String [] record = recordClean.split("-");
         int wins = Integer.parseInt(record[0]);
         int losses = Integer.parseInt(record[1]);            
@@ -151,7 +155,7 @@ public class FighterProfileScrapper {
             fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
             fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
             fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
-            fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
+            fighter.bodyStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
             fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));             
             fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
             fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));

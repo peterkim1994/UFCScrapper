@@ -64,8 +64,8 @@ public class FightScrapper {
         for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();
-            System.out.println(previousFightDate + "----------");
-            System.out.println(previousFightDate);          
+         //   System.out.println(previousFightDate + "----------");
+        //    System.out.println(previousFightDate);          
             LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
             LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);            
             boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event
