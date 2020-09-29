@@ -36,20 +36,19 @@ public class FightScrapper {
     //    FighterProfileScrapper.scrapeUFCprofile(new Fighter("paul felder"));
     }
     
-    public static void scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin){  
+    public static Fight scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin){  
         try{
+            
             FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, event.date);
             FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, event.date);             
-            db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);            
-        }catch(IndexOutOfBoundsException e){
-            System.out.println("Not enough data to scrape for " + fighter1.text() + " vs " + fighter2.text());
-        }catch(NumberFormatException e){
-             System.out.println("Not enough data to scrape for " + fighter1.text() + " vs " + fighter2.text());
+          //  db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);    
+            Fight fight= new Fight(method);
         }catch(UnsupportedOperationException e){//if the fight is a debut, then this exception will be thrown to prevent the low quality data being inserted to database
             System.out.println(e);
         }
     }
     
+    //Crawls for dynamic information of a fighter regarding a specific event
     public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException,SQLException{ 
         
         String fighterName = fighter.text().trim();
@@ -105,7 +104,7 @@ public class FightScrapper {
             }
         }
         System.out.println(details);
-        if(details.numUFCFights<1){
+        if(details.numUFCFights<2){
             throw new UnsupportedOperationException("This fighters the fighters debut in the UFC, hence fight will not be scraped");
         }
         return details;
