@@ -35,9 +35,12 @@ public class DataBaseMessenger {
    private static final int NUM_VALS = 31;
    private final static DataBaseMessenger instance = new DataBaseMessenger();//starts the connection to DB 
    
-   private static final String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME, STANCE, DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH, WINS, LOSSES, STRIKESLANDED,"
+   private static final String prepedInsertCols = "INSERT INTO FIGHTERS  ";
+   /*
+   (FIGHTERNAME, STANCE, DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH, WINS, LOSSES, STRIKESLANDED,"
            + " STRIKINGACCURACY, STRIKESABSORBED, STRIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTTIME,"
-           + "STRIKESSTANDING,CLINCHSTRIKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION,LEGREACH) ";
+           + "STRIKESSTANDING,CLINCHSTRIKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION,LEGREACH)
+   */
    private static final String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";         
    
    private static final String prepedFightDetailCols = "INSERT INTO FIGHTEVENT (EVENTDATE, CITY, COUNTRY, ROUNDS, "
@@ -55,7 +58,7 @@ public class DataBaseMessenger {
        try {
            connectToDB();
            fighterInsert = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
-           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTERNAME = ?");
+           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTER_NAME = ?");
            insertFightEvent = conn.prepareStatement(prepedFightDetailCols + prepedFightDetailVals);
            //insertFightEvent = conn.prepareStatement(prepEventCols + prepEventVals);
        } catch (SQLException ex) {
@@ -66,7 +69,7 @@ public class DataBaseMessenger {
    public static boolean checkDBContainsFighter(String name){
        try {
            Statement statement = conn.createStatement();
-           String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTERNAME = '" + name.trim() +"'";
+           String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTER_NAME = '" + name.trim() +"'";
            ResultSet rs = statement.executeQuery(query);
            // ResultSet rss = db.g
            while(rs.next()){
