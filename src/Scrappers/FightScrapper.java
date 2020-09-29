@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,22 +31,30 @@ public class FightScrapper {
         db.connectToDB();
         EventScraper.db =  db;      
         FightScrapper.db = db;
-        FighterProfileScrapper.db = db;   
+        FighterProfileScrapper.db = db;  
         EventScraper.scrapeEvent(1);
     //    FighterProfileScrapper.scrapeUFCprofile(new Fighter("paul felder"));
     }
     
-    public static void scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin) throws IOException, SQLException{   
-        FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, event.date);
-        FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, event.date); 
-        db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);
+    public static void scrapeFight(Element fighter1, Element fighter2,  UFCEvent event,String method, boolean fighterOneWin){  
+        try{
+            FighterDetailsOfFight fighter1Details = scrapeFighterDetailsBeforeFight(fighter1, event.date);
+            FighterDetailsOfFight fighter2Details =scrapeFighterDetailsBeforeFight(fighter2, event.date);             
+            db.insertFighterEventDetails(fighter1Details, fighter2Details, event, method, fighterOneWin);            
+        }catch(IndexOutOfBoundsException e){
+            System.out.println("Not enough data to scrape for " + fighter1.text() + " vs " + fighter2.text());
+        }catch(NumberFormatException e){
+             System.out.println("Not enough data to scrape for " + fighter1.text() + " vs " + fighter2.text());
+        }catch(UnsupportedOperationException e){//if the fight is a debut, then this exception will be thrown to prevent the low quality data being inserted to database
+            System.out.println(e);
+        }
     }
     
-    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException, SQLException{ 
+    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException,SQLException{ 
         
         String fighterName = fighter.text().trim();
         FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);//object to encapulate info regarding fighter record history at time of fight        
-        Document fighterStatPage = Jsoup.connect(fighter.attr("href")).get();  
+        Document fighterStatPage = Jsoup.connect(fighter.attr("href")).get();      
         FighterProfileScrapper.scrapeFighter(fighterStatPage);
         
         String record = Cleaner.splitThenExtract(fighterStatPage.getElementsByClass("b-content__title-record").text(),":",1);   
@@ -93,8 +103,11 @@ public class FightScrapper {
             else{
                 updateFighterRecord(details, wonPreviousFight);                
             }
-        }        
+        }
         System.out.println(details);
+        if(details.numUFCFights<1){
+            throw new UnsupportedOperationException("This fighters the fighters debut in the UFC, hence fight will not be scraped");
+        }
         return details;
     }
     

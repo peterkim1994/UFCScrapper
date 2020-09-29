@@ -32,14 +32,28 @@ public class FighterProfileScrapper {
     
     static DataBaseMessenger db;
 
-    public static void main(String[] args) throws IOException, SQLException {             
-   //     Fighter fighter = new Fighter("name");
-          // FighterProfileScrapper x = new FighterProfileScrapper();
-      //  scrapeUFCprofile("tito ortiz",fighter);
-   //   PreparedStatement x = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
-  //      for(int i = 0; i <31; i++)
-    //        System.out.print("?,");  
-   
+    public static void main(String[] args){             
+        Document fighterPage;
+        try {
+            DataBaseMessenger db = new DataBaseMessenger();
+            FighterProfileScrapper.db =db;
+            fighterPage = Jsoup.connect("http://www.ufcstats.com/fighter-details/1eff7bc0f815b270").get();
+            Elements x = fighterPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
+            Elements statVals2 = fighterPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");  
+            scrapeFighter(fighterPage);
+            int i =0;
+            for(Element xx: x){     
+               System.out.print(i++ +"   ");
+               System.out.println(xx.text());
+                
+             }
+            for(Element e: statVals2){
+           //     System.out.println(e.text());
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
     }
    
     public FighterProfileScrapper(DataBaseMessenger db){
@@ -68,7 +82,18 @@ public class FighterProfileScrapper {
        String fighterName = Cleaner.parseText(name);       
        if(!dataBaseContains(fighterName)){
            Fighter fighter = new Fighter(fighterName);        
-           scrapeUFCprofile(fighter);   
+           scrapeUFCprofile(fighter); 
+           Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
+           fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
+           fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
+           fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
+           fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
+           fighter.takeDownAccuracy = Cleaner.percentageToDecimal(statVals.get(9));
+           fighter.takeDownDefence = Cleaner.percentageToDecimal(statVals.get(10));
+           Elements statVals2 = fighterStatPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");
+           fighter.stance = statVals2.get(0).ownText().trim();
+           fighter.strikingDefence = Cleaner.percentageToDecimal(statVals2.get(1));
+           fighter.submissionAverage = Double.parseDouble(statVals2.get(1).ownText().trim());
        }
    }    
     public static void scrapeUFCprofile(Fighter fighter) throws IOException, SQLException{       
@@ -79,17 +104,13 @@ public class FighterProfileScrapper {
         Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
 
         Elements fighterStats = fighterPage.getElementsByClass("c-stat-compare__number");
-//            for(Element stat: fighterStats){			   	
-//              String statValue = stat.text();
-//              statValue = statValue.replaceAll("'"," ");    
-//              System.out.println(statValue);
-//            }
-        fighter.strikesLanded = Cleaner.parseDouble(fighterStats.get(0));
-        fighter.strikesAbsorbed = Cleaner.parseDouble(fighterStats.get(1));
-        fighter.takeDownsLanded = Cleaner.parseDouble(fighterStats.get(2));
-        fighter.submissionAverage = Cleaner.parseDouble(fighterStats.get(3));
-        fighter.strikingDefence = Cleaner.percentageToDecimal(fighterStats.get(4).text());
-        fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
+
+//        fighter.strikesLanded = Cleaner.parseDouble(fighterStats.get(0));
+//        fighter.strikesAbsorbed = Cleaner.parseDouble(fighterStats.get(1));
+//        fighter.takeDownsLanded = Cleaner.parseDouble(fighterStats.get(2));
+//        fighter.submissionAverage = Cleaner.parseDouble(fighterStats.get(3));
+//        fighter.strikingDefence = Cleaner.percentageToDecimal(fighterStats.get(4).text());
+//        fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
         fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
         String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
         fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       

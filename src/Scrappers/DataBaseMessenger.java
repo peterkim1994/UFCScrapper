@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class DataBaseMessenger {
  
-
+   //private static DataBaseMessenger instance;
    Connection conn;
    String url = "jdbc:derby://localhost:1527/UFC;";
    //String url = "jdbc:derby:UFC;";

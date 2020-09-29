@@ -1,7 +1,7 @@
-Mon Sep 28 12:36:17 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
+Tue Sep 29 12:54:52 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Mon Sep 28 12:36:21 NZDT 2020:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-d1ec-9526-000046161595 
+Tue Sep 29 12:54:55 NZDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-d723-f418-000046161595 
 on database directory C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper\UFC with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
 Loaded from file:/C:/Users/peter/OneDrive/Documents/PGC/db-derby-10.14.2.0-bin/lib/derby.jar
 java.vendor=Oracle Corporation
