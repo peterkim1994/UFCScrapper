@@ -1,14 +1,14 @@
-Wed Sep 30 15:24:20 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
+Wed Sep 30 12:10:36 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Wed Sep 30 15:24:21 NZDT 2020:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-dcd3-2b24-00002bbd62ac 
-on database directory C:\Users\admin\Documents\NetBeansProjects\UFCScrapper\UFC with class loader sun.misc.Launcher$AppClassLoader@1d44bcfa 
-Loaded from file:/C:/Users/admin/Documents/PGC/db-derby-10.14.2.0-bin/lib/derby.jar
+Wed Sep 30 12:12:14 NZDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-dc21-c85d-000046161595 
+on database directory C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper\UFC with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
+Loaded from file:/C:/Users/peter/OneDrive/Documents/PGC/db-derby-10.14.2.0-bin/lib/derby.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_261-b12
-user.dir=C:\Users\admin\Documents\PGC\db-derby-10.14.2.0-bin
+java.runtime.version=13.0.2+8
+user.dir=C:\Users\peter\OneDrive\Documents\PGC\db-derby-10.14.2.0-bin
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0
-derby.system.home=C:\Users\admin\Documents\NetBeansProjects\UFCScrapper
+derby.system.home=C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper
 Database Class Loader started - derby.database.classpath=''

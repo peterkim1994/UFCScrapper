@@ -52,17 +52,16 @@ public class FighterProfileScrapper {
    
    public static void scrapeFighter(Document fighterStatPage)throws UnsupportedOperationException{       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
-       String fighterName = name.text();       
+       String fighterName = Cleaner.getAlphabeticalString(name.text());       
        if(!dataBaseContains(fighterName))
            try {
                Fighter fighter = new Fighter(fighterName);
-               System.out.println(fighterName);
+           //    System.out.println(fighterName);
                scrapeUFCprofile(fighter);
                Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");               
                fighter.reach = (int) (2.54 * Cleaner.parseInt(statVals.get(2)));
                fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();             
-               fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
-               System.out.println(fighter.name + " strikesLanded = " + fighter.strikesLanded);
+               fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());          
                fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
                fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
                fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
@@ -145,8 +144,8 @@ public class FighterProfileScrapper {
             fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));             
             fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
             fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
-            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
-            System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
+    //        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
+     //       System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
         }catch(IndexOutOfBoundsException e){
             throw new UnsupportedOperationException("Fighter: " + fighter.name + " does not enough data to use");
         }

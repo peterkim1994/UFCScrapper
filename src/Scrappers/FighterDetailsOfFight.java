@@ -46,11 +46,11 @@ public class FighterDetailsOfFight {
     public static void main(String[] args) throws ParseException {    
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
         LocalDate date = LocalDate.parse("September-19-2019", formatter);
-        System.out.println(date.toString());
+      //  System.out.println(date.toString());
         FighterDetailsOfFight x = new FighterDetailsOfFight();
         x.eventDate = LocalDate.parse("2025-11-10");
         x.calculateRingRust(date);
-        System.out.println(x.layOffTimeMonths);
+     //   System.out.println(x.layOffTimeMonths);
     }    
     
     //Calculates number of months from objects date since the input date

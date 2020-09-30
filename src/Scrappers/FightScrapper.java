@@ -71,8 +71,7 @@ public class FightScrapper {
                 details.numUFCFights++;
                 String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)> p.b-fight-details__table-text:nth-of-type(1)").text().trim();                
                 if(recentFightCounter < details.outcomeOfLastFourFights.length){//if info for most recent four fights have not been extracted yet
-                    details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );
-                    System.out.println(details.outcomeOfLastFourFights[recentFightCounter]);
+                    details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );               
                     recentFightCounter++;
                 }
                 if(pastFightDate.compareTo(dateTwoYearsAgo)>0){                    

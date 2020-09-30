@@ -41,10 +41,8 @@ public class EventCrawler {
            Document eventsPage = Jsoup.connect(url).get(); // URL shortened!
            Elements names = eventsPage.getElementsByClass("b-link b-link_style_black"); 
            for(Element name: names)
-               scrapeEventPage(name.attr("href"), true);
-           ArrayList<String> winMethod = new ArrayList<>();                   
-        //   scrapeEventPage("http://www.ufcstats.com/event-details/480b702debcb5433", previousEvent); 
-           // http://www.ufcstats.com/event-details/a79bfbc01b2264d6
+               scrapeEventPage(name.attr("href"), true);         
+        
        } catch(IOException ex){
            Logger.getLogger(EventCrawler.class.getName()).log(Level.SEVERE, null, ex);
        }
