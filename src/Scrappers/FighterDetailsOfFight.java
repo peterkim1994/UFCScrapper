@@ -5,9 +5,8 @@
  */
 package Scrappers;
 
-import UFC.Method;
+
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 /**
@@ -15,14 +14,19 @@ import java.time.format.DateTimeFormatter;
  * @author peter
  */
 public class FighterDetailsOfFight {
-    Fighter fighter;
-    Method [] outcomeOfLastFourFights;
+    String fighter;
+    String [] outcomeOfLastFourFights;
     LocalDate eventDate;
-    int numOfBonusesInLastThreeYears;
+    int numOfBonusesInRecentYears;
     int winsAtTimeOfEvent;
     int lossesAtTimeOfEvent;    
+    int currentWins;
+    int currentLoses;
+   
     int layOffTimeMonths;    
     int submissionLosses;
+    int numUFCFights;
+    
     int tkoLosses;
     int tkoWins;
     int submissionWins;
@@ -30,29 +34,30 @@ public class FighterDetailsOfFight {
     int declosses;
     
     
-    public FighterDetailsOfFight(Fighter fighter, LocalDate date){
-        
+    public FighterDetailsOfFight(String fighterName, LocalDate date){
+        fighter = fighterName;
+        eventDate = date;
+        this.outcomeOfLastFourFights = new String[] {"NA","NA","NA","NA"};
+        numUFCFights = 0;
     }
-    
-    
-    public static void main(String[] args) throws ParseException {
-     //   LocalDate x = LocalDate.parse("September-19-2020");
+     public FighterDetailsOfFight(){
+  
+    }   
+    public static void main(String[] args) throws ParseException {    
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
         LocalDate date = LocalDate.parse("September-19-2019", formatter);
-       
-//        String input = "Jun 15 2020";
-//        SimpleDateFormat parser = new SimpleDateFormat("MMM d  yyyy");
-//        System.out.println(parser.parse(input).toString());
-        System.out.println(date.toString());
-    }
-    
-    
+      //  System.out.println(date.toString());
+        FighterDetailsOfFight x = new FighterDetailsOfFight();
+        x.eventDate = LocalDate.parse("2025-11-10");
+        x.calculateRingRust(date);
+     //   System.out.println(x.layOffTimeMonths);
+    }    
     
     //Calculates number of months from objects date since the input date
-    public int calculateRingRust(LocalDate lastFight){
+    public void calculateRingRust(LocalDate lastFight){
         int yearsSince = this.eventDate.getYear()  - lastFight.getYear();
         int monthsSince = yearsSince*12;
         monthsSince +=  (this.eventDate.getMonthValue() - lastFight.getMonthValue());
-        return monthsSince;
+        this.layOffTimeMonths = monthsSince;
     }
 }

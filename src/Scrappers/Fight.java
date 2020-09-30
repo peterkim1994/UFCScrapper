@@ -4,34 +4,35 @@ import Scrappers.Fighter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class Fight {	
-	
-	FighterDetailsOfFight fighter1;
-        FighterDetailsOfFight fighter2;
-	
-	protected boolean mainEvent;
-        protected boolean championShipRounds;
-	protected LocalDate date; 
-        protected String country;
-        protected String province;	
-        
-        protected int roundEnded;              
-	protected boolean win;        
-        protected int methodOfOutcome;        
-        
-        
-        
-        
-        
-        
-        
-        
-//        public static void main(String[] args) {
-//                Fight x = new Fight();
-//                x.date = LocalDate.parse("2019-10-25");
-//                int d = x.calculateRingRust(LocalDate.parse("2011-11-25"));
-//                System.out.println(d);        
-//        }
-        
+public class Fight{   
+    
+    protected FighterDetailsOfFight fighter1;
+    protected FighterDetailsOfFight fighter2;	
+    protected UFCEvent event;
+    protected boolean championShipRounds;  
+    protected boolean fighter1Won;        
+    protected String methodOfOutcome;        
 
+    public Fight(String method, UFCEvent event, boolean fighter1Won){
+        this.methodOfOutcome = method + ((fighter1Won)? "WIN":"LOSS" );//method of outcome will have win or lose appended to it depending on if fighter 1 won
+        this.event = event;
+        this.championShipRounds = false;
+        this.fighter1Won = fighter1Won;
+    }
+    public Fight(){
+        championShipRounds = false;
+    }
+    
+    //returns the number of rounds the fight was set for, not the round it ended!
+    public int getNumRounds(){
+        if(championShipRounds)
+            return 5;
+        else 
+            return 3;
+    }
+    public String getWinner(){
+        if(fighter1Won)
+            return "WINNER-FIGHTER1";
+        return "WINNER-FIGHTER2";
+    }
 }
