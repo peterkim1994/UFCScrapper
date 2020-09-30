@@ -25,7 +25,7 @@ public class Crawler {
     
     
     public static void main(String[] args){     
-        for(int i =7 ; i<=15; i++)
+        for(int i =15 ; i<=15; i++)
             EventCrawler.scrapeEvent(i);        
     }
     

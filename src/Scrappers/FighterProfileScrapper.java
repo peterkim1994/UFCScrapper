@@ -7,6 +7,7 @@ package Scrappers;
 
 import TextPreprocessingUtils.Cleaner;
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,7 +33,7 @@ public class FighterProfileScrapper {
            try {  
                scrapeUFCprofile(fighter);
                Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");   
-               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();             
+               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();                
                fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());          
                fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
                fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
@@ -53,7 +54,9 @@ public class FighterProfileScrapper {
            }catch(NumberFormatException e){
                scrapeReachFromOtherWebsite(fighter);
                DataBaseMessenger.insertNewFighterToDB(fighter);
-           } 
+           }catch(DateTimeParseException e){
+               throw new  UnsupportedOperationException("DOB" + fighterName + " couldnt be found and lacked data" );
+           }
        }
    }    
    
