@@ -71,8 +71,11 @@ public class EventCrawler {
         }             
         event.country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
         event.city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);       
-
+        
         EventCrawler.numChampionFights = eventPage.getElementsByAttributeValue("src","http://1e49bc5171d173577ecd-1323f4090557a33db01577564f60846c.r80.cf1.rackcdn.com/belt.png").size();
+        if(EventCrawler.numChampionFights == 0){//main event is always 5 rounds even though its not a title fight
+            EventCrawler.numChampionFights++;
+        }
         //for(Element xx: x)
         //    System.out.println(xx.outerHtml());
         Elements fightersOnEvent = eventPage.getElementsByClass("b-link b-link_style_black");      

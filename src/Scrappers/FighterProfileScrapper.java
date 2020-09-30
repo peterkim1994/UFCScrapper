@@ -58,9 +58,9 @@ public class FighterProfileScrapper {
                Fighter fighter = new Fighter(fighterName);
                System.out.println(fighterName);
                scrapeUFCprofile(fighter);
-               Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
-               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();
-               System.out.println(fighter.dob);
+               Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");               
+               fighter.reach = (int) (2.54 * Cleaner.parseInt(statVals.get(2)));
+               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();             
                fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
                System.out.println(fighter.name + " strikesLanded = " + fighter.strikesLanded);
                fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
@@ -115,13 +115,13 @@ public class FighterProfileScrapper {
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
             }else if(label.contains("Weight")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
-            }else if(label.contains("Reach")){
-                fighter.reach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));               
             }else if(label.contains("Leg reach")){             
                 fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
                 legReachInfoAvailable = true;
             }
         }
+        //else if(label.contains("Reach")){
+        //        fighter.reach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));    
         
         if(!legReachInfoAvailable)
             fighter.legReach = 0;

@@ -42,15 +42,8 @@ public class FighterDetailsOfFight {
     }
      public FighterDetailsOfFight(){
   
-    }
-    
-     @Override
-    public String toString() {
-        return "FighterDetailsOfFight{" + "fighter=" + fighter + ", outcomeOfLastFourFights=" + outcomeOfLastFourFights + ", eventDate=" + eventDate + ", numOfBonusesInRecentYears=" + numOfBonusesInRecentYears + ", winsAtTimeOfEvent=" + winsAtTimeOfEvent + ", lossesAtTimeOfEvent=" + lossesAtTimeOfEvent + ", layOffTimeMonths=" + layOffTimeMonths + ", submissionLosses=" + submissionLosses + ", tkoLosses=" + tkoLosses + ", tkoWins=" + tkoWins + ", submissionWins=" + submissionWins + ", decWins=" + decWins + ", declosses=" + declosses + '}';
-    }
-    
-    public static void main(String[] args) throws ParseException {
-     //   LocalDate x = LocalDate.parse("September-19-2020");
+    }   
+    public static void main(String[] args) throws ParseException {    
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
         LocalDate date = LocalDate.parse("September-19-2019", formatter);
         System.out.println(date.toString());

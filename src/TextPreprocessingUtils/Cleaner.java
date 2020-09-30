@@ -27,7 +27,8 @@ public class Cleaner {
     }
     
     public static int parseInt(Element element){
-        return Integer.parseInt(element.text());
+        String text = element.text().replaceAll("([^0-9])+","");
+        return Integer.parseInt(text);
     }    
  
     
