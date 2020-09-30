@@ -98,7 +98,7 @@ public class FightScrapper {
             }           
            
         }
-        System.out.println(details);
+   //     System.out.println(details);
         if(details.numUFCFights < 2){
             throw new UnsupportedOperationException("This fight was the fighters debut or 2nd fight in the UFC, fight data will not be collected");
         }

@@ -35,7 +35,13 @@ public class Cleaner {
         text = text.replaceAll("\\s+","-");     
         return text;
     }
-     
+    public static void main(String[] args) {
+        System.out.println(getAlphabeticalString(" peter o'kim "));
+    }
+    public static String getAlphabeticalString(String text){
+        text = text.replaceAll("([^a-zA-Z|^\\s])+","");     
+        return text;
+    }
     
     public static double percentageToDecimal(Element element){
        return  percentageToDecimal(element.text());

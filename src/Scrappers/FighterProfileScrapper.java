@@ -31,12 +31,12 @@ public class FighterProfileScrapper {
             fighterPage = Jsoup.connect("http://www.ufcstats.com/fighter-details/1eff7bc0f815b270").get();
             Elements x = fighterPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
             Elements statVals2 = fighterPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");  
-            scrapeFighter(fighterPage);
+         //   scrapeFighter(fighterPage);
             int i =0;
-        //    for(Element xx: x){     
-           //    System.out.print(i++ +"   ");
-             //  System.out.println(xx.text());                
-         //    }
+            for(Element xx: x){     
+               System.out.print(i++ +"   ");
+               System.out.println(xx.text());                
+             }
         //    for(Element e: statVals2){
         //        System.out.println(e.text());
        //     }
@@ -59,6 +59,8 @@ public class FighterProfileScrapper {
                System.out.println(fighterName);
                scrapeUFCprofile(fighter);
                Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");
+               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();
+               System.out.println(fighter.dob);
                fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());
                System.out.println(fighter.name + " strikesLanded = " + fighter.strikesLanded);
                fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
@@ -74,14 +76,12 @@ public class FighterProfileScrapper {
            } catch (SQLException ex) {
                Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
            } catch (IOException ex) {
-               Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
-           }
-       
+           Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
+       }       
    }    
     public static void scrapeUFCprofile(Fighter fighter) throws IOException{       
           
         String name = Cleaner.whiteSpaceToHyphen(fighter.name);
-      //  System.out.println(name);
         String url = "https://www.ufc.com/athlete/" + name;
         Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
 
@@ -107,15 +107,11 @@ public class FighterProfileScrapper {
         Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
         Elements biographyValues  = fighterPage.getElementsByClass("c-bio__text");            
         boolean legReachInfoAvailable = false;
-        System.out.println("-----------------------------------------------------------------------" +biographyValues.size() );
         for (int i = 0; i < biographyValues.size(); i++) {
             String label = biographyLabels.get(i).text().trim();
             String value = biographyValues.get(i).text();
-            System.out.println(label + ": " + value);
-            if(label.contains("Age")){
-                fighter.dob = LocalDate.now().getYear() - Cleaner.parseInt(biographyValues.get(i));
-                System.out.println("DOOOOOOOOOOOOOOB" + fighter.dob);
-            }else if(label.contains("Height")){
+           // System.out.println(label + ": " + value);
+            if(label.contains("Height")){
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
             }else if(label.contains("Weight")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
@@ -135,17 +131,6 @@ public class FighterProfileScrapper {
         }catch(ArrayIndexOutOfBoundsException e){
             fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",0);
         }
-                
-
-  //      Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
-    //   System.out.println(fighterHistory.text());
-  //      String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
-     //   System.out.println(recordClean);•
-  //      String [] record = recordClean.split("•");        
-  //      record = record[1].split("-");
-  //      fighter.wins = Integer.parseInt(record[0]);
-        System.out.println(fighter.wins);
-//        fighter.losses = Integer.parseInt(record[1]);            
 
         Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value"); 
         try{
