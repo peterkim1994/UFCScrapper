@@ -140,6 +140,9 @@ public class FighterProfileScrapper {
             fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
             fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
             fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
+            if(fighter.strikesStanding + fighter.groundStrikes + fighter.clinchStrikes == 0){
+                throw new UnsupportedOperationException("Fighter: " + fighter.getName() + " does not enough data to use");
+            }
             fighter.tko = Cleaner.extractPercentage(percentageStats.get(3));
             fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
             fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
