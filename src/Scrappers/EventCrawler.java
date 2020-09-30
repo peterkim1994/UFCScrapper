@@ -41,7 +41,8 @@ public class EventCrawler {
            Document eventsPage = Jsoup.connect(url).get(); // URL shortened!
            Elements names = eventsPage.getElementsByClass("b-link b-link_style_black");           
            ArrayList<String> winMethod = new ArrayList<>();                   
-           scrapeEventPage("http://www.ufcstats.com/event-details/a79bfbc01b2264d6", previousEvent);           
+           scrapeEventPage("http://www.ufcstats.com/event-details/480b702debcb5433", previousEvent); 
+           // http://www.ufcstats.com/event-details/a79bfbc01b2264d6
        } catch(IOException ex){
            Logger.getLogger(EventCrawler.class.getName()).log(Level.SEVERE, null, ex);
        }
@@ -55,6 +56,10 @@ public class EventCrawler {
         UFCEvent event = new UFCEvent();        
         String eventDate = Cleaner.splitThenExtract(eventDetails.get(0),":",1);    
         event.date = Cleaner.reformatDate(eventDate);
+        if(DataBaseMessenger.checkDBContainsFight(event.date)){//if database has already has data for event
+            System.out.println("DATABASE ALREADY CONTAINS DATA FOR EVENT DATE: " + event.date);
+            return ;            
+        }
         try{
             String eventAttendence = Cleaner.splitThenExtract(eventDetails.get(2),":",1);  
             eventAttendence = Cleaner.getNumericalString((eventAttendence));

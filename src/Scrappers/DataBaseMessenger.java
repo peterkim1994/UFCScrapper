@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,10 +31,9 @@ public class DataBaseMessenger {
    private static String password = "peterkim";  
    private static PreparedStatement fighterInsert;
    private static PreparedStatement getFighter;
- //  PreparedStatement fighterEventDetailInsert;
+   private static PreparedStatement checkDBContainsFight;
    private static PreparedStatement insertFightEvent;
-   private static final int NUM_VALS = 31;
-   private final static DataBaseMessenger instance = new DataBaseMessenger();//starts the connection to DB 
+   private final static DataBaseMessenger singleton = new DataBaseMessenger();//starts the connection to DB 
    
    private static final String prepedInsertCols = "INSERT INTO FIGHTERS  ";
    /*
@@ -41,7 +41,7 @@ public class DataBaseMessenger {
            + " STRIKINGACCURACY, STRIKESABSORBED, STRIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTTIME,"
            + "STRIKESSTANDING,CLINCHSTRIKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION,LEGREACH)
    */
-   private static final String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";         
+   private static final String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";         
    
    private static final String prepedFightDetailCols = "INSERT INTO FIGHTEVENT (EVENTDATE, CITY, COUNTRY, ROUNDS, "
            + "FIGHTER1,FIGHTER1RECENT1, FIGHTER1RECENT2, FIGHTER1RECENT3, FIGHTER1RECENT4, "
@@ -53,18 +53,35 @@ public class DataBaseMessenger {
    
 //   final String prepEventCols  = "INSERT INTO FIGHT (FIGHTER1, FIGHTER2, DATE,  METHODOFOUTCOME, FIGHTER1WIN)";
 //   final String prepEventVals = "VALUES(?,?,?,?,?,?,?,?)";
-           
+   private static final String fightQuery = "SELECT * FROM FIGHTEVENT WHERE EVENTDATE = ?";
    private DataBaseMessenger(){
        try {
            connectToDB();
+           checkDBContainsFight = conn.prepareStatement(fightQuery);
            fighterInsert = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
-           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTER_NAME = ?");
+           getFighter = conn.prepareStatement("SELECT * FROM FIGHTERS WHERE FIGHTER_NAME= ?");
            insertFightEvent = conn.prepareStatement(prepedFightDetailCols + prepedFightDetailVals);
            //insertFightEvent = conn.prepareStatement(prepEventCols + prepEventVals);
        } catch (SQLException ex) {
            Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
        }
    }
+   
+   
+   public static boolean checkDBContainsFight(LocalDate date){
+       try {
+//           checkDBContainsFight.setString(0, fighter1);
+//           checkDBContainsFight.setString(1, fighter2);
+           checkDBContainsFight.setDate(1, Date.valueOf(date));
+           ResultSet rs = checkDBContainsFight.executeQuery();
+           while(rs.next())
+               return true;
+           return false;
+       } catch (SQLException ex) {
+           Logger.getLogger(DataBaseMessenger.class.getName()).log(Level.SEVERE, null, ex);
+       }
+       return true;
+   }   
    
    public static boolean checkDBContainsFighter(String name){
        try {
@@ -143,31 +160,30 @@ public class DataBaseMessenger {
         fighterInsert.setInt(6, fighter.height);
         fighterInsert.setInt(7, fighter.weight);
         fighterInsert.setInt(8, fighter.reach);
-        fighterInsert.setInt(9, fighter.wins);
-        fighterInsert.setInt(10, fighter.losses);
+    //    fighterInsert.setInt(9, fighter.wins);
+      //  fighterInsert.setInt(8, fighter.losses);
         
-        fighterInsert.setDouble(11, fighter.strikesLanded);
-        System.out.println("DB==============================================     "+ fighter.strikesLanded);
-        fighterInsert.setDouble(12, fighter.strikingAccuracy);
-        fighterInsert.setDouble(13, fighter.strikesAbsorbed);
-        fighterInsert.setDouble(14, fighter.strikingDefence);
-        fighterInsert.setDouble(15, fighter.takeDownsLanded);
-        fighterInsert.setDouble(16, fighter.takeDownAccuracy);
-        fighterInsert.setDouble(17, fighter.takeDownDefence);
-        fighterInsert.setDouble(18, fighter.submissionAverage);
-        fighterInsert.setDouble(19, fighter.knockDownRatio);
-        fighterInsert.setDouble(20, fighter.averageFightTime);
+        fighterInsert.setDouble(9, fighter.strikesLanded);       
+        fighterInsert.setDouble(10, fighter.strikingAccuracy);
+        fighterInsert.setDouble(11, fighter.strikesAbsorbed);
+        fighterInsert.setDouble(12, fighter.strikingDefence);
+        fighterInsert.setDouble(13, fighter.takeDownsLanded);
+        fighterInsert.setDouble(14, fighter.takeDownAccuracy);
+        fighterInsert.setDouble(15, fighter.takeDownDefence);
+        fighterInsert.setDouble(16, fighter.submissionAverage);
+        fighterInsert.setDouble(17, fighter.knockDownRatio);
+        fighterInsert.setDouble(18, fighter.averageFightTime);
         
-        fighterInsert.setDouble(21, fighter.strikesStanding);
-        fighterInsert.setDouble(22, fighter.clinchStrikes);
-        fighterInsert.setDouble(23, fighter.groundStrikes);
-        fighterInsert.setDouble(24, fighter.headStrikes);
-        fighterInsert.setDouble(25, fighter.bodyStrikes);
-        fighterInsert.setDouble(26, fighter.legStrikes);
-        fighterInsert.setDouble(27, fighter.tko);
-        fighterInsert.setDouble(28, fighter.submission);
-        fighterInsert.setDouble(29, fighter.decision);
-        fighterInsert.setDouble(30, fighter.legReach);          
+        fighterInsert.setDouble(19, fighter.strikesStanding);
+        fighterInsert.setDouble(20, fighter.clinchStrikes);
+        fighterInsert.setDouble(21, fighter.groundStrikes);
+        fighterInsert.setDouble(22, fighter.headStrikes);
+        fighterInsert.setDouble(23, fighter.bodyStrikes);
+        fighterInsert.setDouble(24, fighter.legStrikes);
+        fighterInsert.setDouble(25, fighter.tko);
+        fighterInsert.setDouble(26, fighter.submission);
+        fighterInsert.setDouble(27, fighter.decision);
+        fighterInsert.setDouble(28, fighter.legReach);          
         fighterInsert.executeUpdate();
     }
     

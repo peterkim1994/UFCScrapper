@@ -52,7 +52,7 @@ public class FighterProfileScrapper {
    
    public static void scrapeFighter(Document fighterStatPage)throws UnsupportedOperationException{       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
-       String fighterName = Cleaner.parseText(name);       
+       String fighterName = name.text();       
        if(!dataBaseContains(fighterName))
            try {
                Fighter fighter = new Fighter(fighterName);
@@ -109,7 +109,7 @@ public class FighterProfileScrapper {
         boolean legReachInfoAvailable = false;
         System.out.println("-----------------------------------------------------------------------" +biographyValues.size() );
         for (int i = 0; i < biographyValues.size(); i++) {
-            String label = biographyLabels.get(i).text();
+            String label = biographyLabels.get(i).text().trim();
             String value = biographyValues.get(i).text();
             System.out.println(label + ": " + value);
             if(label.contains("Age")){
@@ -120,8 +120,7 @@ public class FighterProfileScrapper {
             }else if(label.contains("Weight")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
             }else if(label.contains("Reach")){
-                fighter.reach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
-                legReachInfoAvailable = true;
+                fighter.reach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));               
             }else if(label.contains("Leg reach")){             
                 fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
                 legReachInfoAvailable = true;
@@ -138,13 +137,15 @@ public class FighterProfileScrapper {
         }
                 
 
-        Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
-      // System.out.println(fighterHistory.text());
-        String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
-     //   System.out.println(recordClean);
-        String [] record = recordClean.split("-");
-        fighter.wins = Integer.parseInt(record[0]);
-        fighter.losses = Integer.parseInt(record[1]);            
+  //      Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
+    //   System.out.println(fighterHistory.text());
+  //      String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
+     //   System.out.println(recordClean);•
+  //      String [] record = recordClean.split("•");        
+  //      record = record[1].split("-");
+  //      fighter.wins = Integer.parseInt(record[0]);
+        System.out.println(fighter.wins);
+//        fighter.losses = Integer.parseInt(record[1]);            
 
         Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value"); 
         try{

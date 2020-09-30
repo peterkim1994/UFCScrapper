@@ -69,7 +69,7 @@ public class FightScrapper {
             boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event                          
             if(startScraping){
                 details.numUFCFights++;
-                String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)").first().text().trim();                
+                String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)> p.b-fight-details__table-text:nth-of-type(1)").text().trim();                
                 if(recentFightCounter < details.outcomeOfLastFourFights.length){//if info for most recent four fights have not been extracted yet
                     details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );
                     System.out.println(details.outcomeOfLastFourFights[recentFightCounter]);
@@ -90,13 +90,13 @@ public class FightScrapper {
                     details.calculateRingRust(pastFightDate);
                     ringRustCalculated = true;
                 }
-            }
+            } else{
+                updateFighterRecord(details, wonPreviousFight);                
+            }            
             if(pastFightDate.compareTo(eventDate) == 0){//only starts extracting information prior to the event date
                 startScraping = true;     
             }           
-            else{
-                updateFighterRecord(details, wonPreviousFight);                
-            }
+           
         }
         System.out.println(details);
         if(details.numUFCFights < 2){
