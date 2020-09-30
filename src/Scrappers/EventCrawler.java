@@ -56,10 +56,10 @@ public class EventCrawler {
         UFCEvent event = new UFCEvent();        
         String eventDate = Cleaner.splitThenExtract(eventDetails.get(0),":",1);    
         event.date = Cleaner.reformatDate(eventDate);
-        if(DataBaseMessenger.checkDBContainsFight(event.date)){//if database has already has data for event
-            System.out.println("DATABASE ALREADY CONTAINS DATA FOR EVENT DATE: " + event.date);
-            return ;            
-        }
+     //   if(DataBaseMessenger.checkDBContainsFight(event.date)){//if database has already has data for event
+      //      System.out.println("DATABASE ALREADY CONTAINS DATA FOR EVENT DATE: " + event.date);
+     //       return ;            
+   //     }
         try{
             String eventAttendence = Cleaner.splitThenExtract(eventDetails.get(2),":",1);  
             eventAttendence = Cleaner.getNumericalString((eventAttendence));
@@ -81,9 +81,9 @@ public class EventCrawler {
         Queue<String> fightOutcomes = new LinkedList<>();
         
         getEventInfo(fighters, fightersOnEvent, fightOutcomes, eventPage, isPreviousEvent);//updates the lists
-        if(isPreviousEvent)
+        if(isPreviousEvent){
             scrapeTheFights(event,fighters,fightOutcomes);
-        else
+        }else
             scrapeUpComingFights(event,fighters);       
    }  
    
@@ -92,8 +92,9 @@ public class EventCrawler {
      //  int numFights = calcNumFightsToScrape(event.attendance);
        int numFights = fighters.size()/2;
        Random rand = new Random();
+       String fighterName;
        boolean didFighter1Win;//if true, winning fighter will be the first input parameter for scrapeFight function
-       for(int i=0; i< numFights*2 ; i += 2){
+       for(int i=0; i< numFights*2 ; i += 2){            
             String methodOfOutcome = fightOutcomes.poll();
             didFighter1Win = rand.nextBoolean();
             Fight fight = new Fight(methodOfOutcome, event, didFighter1Win);
@@ -101,7 +102,12 @@ public class EventCrawler {
                 fight.championShipRounds = true;
             }       
             Element winner = fighters.get(i);
-            Element loser = fighters.get(i+1);              
+            Element loser = fighters.get(i+1);
+            fighterName = Cleaner.removeApostrophe(winner.text());
+            if(DataBaseMessenger.checkDBContainsFight(event.date,fighterName)){
+                System.out.println("This fight is already in the dataBase");
+                continue;
+            }
             if(didFighter1Win){
                 FightScrapper.scrapeFight(winner, loser, fight);             
             }else{

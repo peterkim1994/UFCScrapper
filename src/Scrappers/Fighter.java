@@ -1,8 +1,10 @@
 package Scrappers;
 
+import TextPreprocessingUtils.Cleaner;
+
 public class Fighter {
 	
-    protected String name;
+    private String name;
     protected int dob; // Year
     protected String stance;
     protected String homeTown;
@@ -43,8 +45,20 @@ public class Fighter {
     double submission;
     double decision;
 
-    public Fighter(String name){
-        this.name = name;
+    public Fighter(String name){        
+       setName(name);
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public void setName(String name){
+        this.name = Cleaner.removeApostrophe(name);        
+    }
+    
+    public String getURLName(){
+        return Cleaner.whiteSpaceToHyphen(name);
     }
 	
 }

@@ -33,14 +33,17 @@ public class Cleaner {
  
     
     public static String whiteSpaceToHyphen(String text){
+        text = text.replaceAll("'+",""); 
         text = text.replaceAll("\\s+","-");     
         return text;
     }
     public static void main(String[] args) {
-        System.out.println(getAlphabeticalString(" peter o'kim "));
+        System.out.println(removeApostrophe(" peter o'kim "));
     }
-    public static String getAlphabeticalString(String text){
-        text = text.replaceAll("([^a-zA-Z|^\\s])+","");     
+    public static String removeApostrophe(String text){
+        text = text.trim();
+        text = text.replaceAll("\\.+","");  
+        text = text.replaceAll("'+","");     
         return text;
     }
     

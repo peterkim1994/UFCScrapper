@@ -46,22 +46,22 @@ public class FightScrapper {
     }
     
     //Crawls for dynamic information of a fighter regarding a specific event
-    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException{ 
+    public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException{         
+            
+        Document fighterStatPage = Jsoup.connect(fighter.attr("href")).get();             
         
-        String fighterName = fighter.text().trim();
-        FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);//object to encapulate info regarding fighter record history at time of fight        
-        Document fighterStatPage = Jsoup.connect(fighter.attr("href")).get();      
-        FighterProfileScrapper.scrapeFighter(fighterStatPage);
+        String fighterName = Cleaner.removeApostrophe(fighter.text());
+        FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);
         
         String record = Cleaner.splitThenExtract(fighterStatPage.getElementsByClass("b-content__title-record").text(),":",1);   
-        setFighterRecordVals(details, record);    
-        
-       // System.out.println(record);
+        setFighterRecordVals(details, record);            
+
         Elements tableRows = fighterStatPage.getElementsByClass("b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click");    
         boolean startScraping = false;
-        int recentFightCounter =0;       
-        boolean ringRustCalculated =false;   
-        for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had
+        int recentFightCounter =0;
+        boolean ringRustCalculated =false;           
+        
+        for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had in the UFC           
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();       
             LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
@@ -94,13 +94,12 @@ public class FightScrapper {
             }            
             if(pastFightDate.compareTo(eventDate) == 0){//only starts extracting information prior to the event date
                 startScraping = true;     
-            }           
-           
+            } 
         }
-   //     System.out.println(details);
         if(details.numUFCFights < 2){
-            throw new UnsupportedOperationException("This fight was the fighters debut or 2nd fight in the UFC, fight data will not be collected");
+            throw new UnsupportedOperationException("This " + fighterName + "'s debut or 2nd fight in the UFC, fight data will not be collected");
         }
+        FighterProfileScrapper.scrapeFighter(fighterStatPage);
         return details;
     }
     
