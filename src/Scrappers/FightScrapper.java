@@ -27,8 +27,10 @@ public class FightScrapper {
     static DataBaseMessenger db; 
     
     public static void main(String[] args) {   
-        EventCrawler.scrapeEvent(1);
-  
+     //   EventCrawler.scrapeEvent(1);
+    String x="peter";
+    String y ="peter";
+        System.out.println(x==y);
     }
     
     public static void scrapeFight(Element fighter1, Element fighter2, Fight fight){  

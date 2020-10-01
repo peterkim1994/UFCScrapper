@@ -29,6 +29,8 @@ public class SherdogScrapper {
             Elements firstResult = dogSearchPage.getElementsByAttribute("href");
             for(Element f: firstResult)
                 System.out.println(f.text());
+            //SELECT PETERKIM.FIGHTERS.FIGHTER_NAME,PETERKIM.FIGHTERS.TKO,PETERKIM.FIGHTERS.SUBMISSION,PETERKIM.FIGHTERS.DECISION  FROM PETERKIM.FIGHTERS FETCH FIRST 2550 ROWS ONLY;
+
      //       String fighterSherDogUrl = firstResult.attr("href");
        //     Document fighterSherDogProfile = Jsoup.connect(fighterSherDogUrl).get();
       //      Elements em = fighterSherDogProfile.getElementsByTag("em");
