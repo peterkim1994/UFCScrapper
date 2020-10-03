@@ -5,6 +5,7 @@
  */
 package Scrappers;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,26 +18,17 @@ import java.util.logging.Logger;
  */
 public class Crawler {
     
-    static Connection conn;
-    static String url = "jdbc:derby://localhost:1527/UFC;";
-    //String url = "jdbc:derby:UFC;";
-    static String user = "peterKim";
-    static String password = "peterkim";  
-    
-    
+ 
     public static void main(String[] args){     
-        for(int i =15 ; i<=15; i++)
-            EventCrawler.scrapeEvent(i);        
+        try {
+            //  for(int i =15 ; i<=15; i++)
+            //      EventCrawler.scrapeEvent(i);
+            EventCrawler.scrapeEventPage("http://www.ufcstats.com/event-details/805ad1801eb26abb", false);
+        } catch (IOException ex) {
+            Logger.getLogger(Crawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
-     public static void connectToDB(){
-       try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println(conn.toString() + " connectected successfully");
-        } catch (SQLException ex) {
-            System.err.println(ex);
-            Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-   }
+
 }

@@ -47,6 +47,20 @@ public class FightScrapper {
         }
     }
     
+    public static void scrapeUpComingFight(Element fighter1, Element fighter2, Fight fight){
+         try{            
+            FighterDetailsOfFight fighter1Details = scrapeFighterDetailsForUpcomingFight(fighter1, fight.event.date);
+            FighterDetailsOfFight fighter2Details = scrapeFighterDetailsForUpcomingFight(fighter2, fight.event.date);    
+            fight.fighter1 = fighter1Details;
+            fight.fighter2 = fighter2Details;
+            DataBaseMessenger.insertFighterEventDetails(fight);             
+        }catch(UnsupportedOperationException e){//if the fight is a debut, then this exception will be thrown to prevent the low quality data being inserted to database
+            System.out.println(e);
+        } catch (IOException ex) {
+            Logger.getLogger(FightScrapper.class.getName()).log(Level.SEVERE, null, ex);
+        }       
+    }
+    
     //Crawls for dynamic information of a fighter regarding a specific event
     public static FighterDetailsOfFight scrapeFighterDetailsBeforeFight(Element fighter, LocalDate eventDate) throws IOException{         
             
@@ -67,10 +81,10 @@ public class FightScrapper {
             Element row =tableRows.get(i);
             String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();       
             LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
-            LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);            
+            LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);           
+            details.numUFCFights++;
             boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event                          
-            if(startScraping){
-                details.numUFCFights++;
+            if(startScraping){                
                 String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)> p.b-fight-details__table-text:nth-of-type(1)").text().trim();                
                 if(recentFightCounter < details.outcomeOfLastFourFights.length){//if info for most recent four fights have not been extracted yet
                     details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );               
@@ -94,6 +108,7 @@ public class FightScrapper {
             } else{
                 updateFighterRecord(details, wonPreviousFight);                
             }            
+            System.out.println("EVENT DATE FOR: " + fighter.text() + eventDate+ " pastFightDAte = " + pastFightDate);
             if(pastFightDate.compareTo(eventDate) == 0){//only starts extracting information prior to the event date
                 startScraping = true;     
             } 
@@ -104,6 +119,58 @@ public class FightScrapper {
         FighterProfileScrapper.scrapeFighter(fighterStatPage);
         return details;
     }
+    
+    public static FighterDetailsOfFight scrapeFighterDetailsForUpcomingFight(Element fighter, LocalDate eventDate) throws IOException{         
+            
+        Document fighterStatPage = Jsoup.connect(fighter.attr("href")).get();             
+        
+        String fighterName = Cleaner.removeApostrophe(fighter.text());
+        FighterDetailsOfFight details = new FighterDetailsOfFight(fighterName, eventDate);
+        
+        String record = Cleaner.splitThenExtract(fighterStatPage.getElementsByClass("b-content__title-record").text(),":",1);   
+        setFighterRecordVals(details, record);            
+
+        Elements tableRows = fighterStatPage.getElementsByClass("b-fight-details__table-row b-fight-details__table-row__hover js-fight-details-click");    
+        boolean startScraping = false;
+        int recentFightCounter =0;
+        boolean ringRustCalculated =false;           
+        
+        for(int i=0; i<tableRows.size() ; i++){//for loop iterates through all previous fights the fighter has had in the UFC           
+            Element row =tableRows.get(i);
+            String previousFightDate = row.select("td.l-page_align_left.b-fight-details__table-col:nth-of-type(7)> p.b-fight-details__table-text:nth-of-type(2)").text();       
+            LocalDate pastFightDate = Cleaner.reformatDate(previousFightDate);
+            LocalDate dateTwoYearsAgo  = eventDate.minusYears(2);           
+            details.numUFCFights++;
+            boolean wonPreviousFight =  row.select("td.b-fight-details__table-col:nth-of-type(1)").text().equalsIgnoreCase("WIN");//out come of a fight prior to "current" event                          
+            String methodOfBoutResult = row.select("td.b-fight-details__table-col:nth-of-type(8)> p.b-fight-details__table-text:nth-of-type(1)").text().trim();                
+            if(recentFightCounter < details.outcomeOfLastFourFights.length){//if info for most recent four fights have not been extracted yet
+                details.outcomeOfLastFourFights[recentFightCounter] = methodOfBoutResult + ((wonPreviousFight)? "WIN":"LOSS" );               
+                recentFightCounter++;
+            }
+            if(pastFightDate.compareTo(dateTwoYearsAgo)>0){                    
+                updateFighterBonuses(row, details);                    
+            }   
+            if(!wonPreviousFight){//UFC has win by way stats, but no lose by way
+                if(methodOfBoutResult.contains("KO"))
+                    details.tkoLosses++;
+                else  if(methodOfBoutResult.contains("SUB"))
+                    details.submissionLosses++;
+                else if(methodOfBoutResult.contains("U-DEC"))
+                    details.declosses++;
+            }
+            if(!ringRustCalculated){                   
+                details.calculateRingRust(pastFightDate);
+                ringRustCalculated = true;
+            }   
+        }
+        if(details.numUFCFights < 2){
+            throw new UnsupportedOperationException("This " + fighterName + "'s debut or 2nd fight in the UFC, fight data will not be collected");
+        }
+        FighterProfileScrapper.scrapeFighter(fighterStatPage);
+        return details;
+    }
+    
+    
     
     public static void setFighterRecordVals(FighterDetailsOfFight details, String record){
         details.currentWins = Integer.parseInt(Cleaner.splitThenExtract(record,"-", 0).trim());   
