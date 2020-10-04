@@ -21,9 +21,9 @@ public class Crawler {
  
     public static void main(String[] args){     
         try {
-            //  for(int i =15 ; i<=15; i++)
-            //      EventCrawler.scrapeEvent(i);
-            EventCrawler.scrapeEventPage("http://www.ufcstats.com/event-details/805ad1801eb26abb", false);
+              for(int i =1 ; i<=12; i++)
+                  EventCrawler.scrapeEvent(i);
+        //    EventCrawler.scrapeEventPage("http://www.ufcstats.com/event-details/fd4578cac86d75ca", false);
         } catch (IOException ex) {
             Logger.getLogger(Crawler.class.getName()).log(Level.SEVERE, null, ex);
         }
