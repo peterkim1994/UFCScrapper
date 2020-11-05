@@ -20,7 +20,7 @@ public class Crawler {
         try {
            //   for(int i =1 ; i<=12; i++)
            //       EventCrawler.scrapeEvent(i);
-            EventCrawler.scrapeEventPage("http://www.ufcstats.com/event-details/c3c38c86f5ab9b5c", false);
+            EventCrawler.scrapeEventPage("http://www.ufcstats.com/event-details/bbb15f301e4a490a", false);
         } catch (IOException ex) {
             Logger.getLogger(Crawler.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -22,15 +22,13 @@ import org.jsoup.HttpStatusException;
  */
 public class FighterProfileScrapper {
     
-
-   
    public static void scrapeFighter(Document fighterStatPage)throws UnsupportedOperationException{       
        Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
        String fighterName = Cleaner.removeApostrophe(name.text());    
         
        if(!dataBaseContains(fighterName)){
             Fighter fighter = new Fighter(fighterName);
-           try {  
+           try {
                scrapeUFCprofile(fighter);
                Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");   
                fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();                

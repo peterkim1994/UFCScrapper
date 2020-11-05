@@ -67,6 +67,8 @@ public class EventCrawler {
             event.attendance = Integer.parseInt(eventAttendence);
         }catch(ArrayIndexOutOfBoundsException e){//if attendence is 0
             event.attendance = 0;
+        }catch(IndexOutOfBoundsException e){
+             event.attendance = 0;
         }             
         event.country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
         event.city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);       
