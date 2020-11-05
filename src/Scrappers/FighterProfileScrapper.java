@@ -7,22 +7,14 @@ package Scrappers;
 
 import TextPreprocessingUtils.Cleaner;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.format.DateTimeParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jsoup.HttpStatusException;
 
 /**
  *
@@ -30,147 +22,139 @@ import java.util.logging.Logger;
  */
 public class FighterProfileScrapper {
     
-   static Connection conn;
-   static String url = "jdbc:derby://localhost:1527/UFC;";
-   //String url = "jdbc:derby:UFC;";
-   static String user = "peterKim";
-   static String password = "peterkim";  
-   static PreparedStatement prepSt;
-   final int NUM_VALS = 31;
-   
-   static String prepedInsertCols = "INSERT INTO FIGHTERS (FIGHTERNAME,STANCE,DOB, HOMETOWN,COUNTRY, HEIGHT, WEIGHT, REACH,LEGREACH, WINS, LOSSES, STRIKESLANDED,"
-           + " STRIKING ACCURACY, STRIKESABSORBED,STIKINGDEFENCE, TAKEDOWNSLANDED,TAKEDOWNACCURACY,TAKEDOWNDEFENCE, SUBMISSIONAVERAGE, KNOCKDOWNRATIO, AVERAGEFIGHTINGTIME,"
-           + "STRIKESSTANDING,CLINCHSTRKES, GROUNDSTRIKES, HEADSTRIKES, BODYSTRIKES, LEGSTRIKES, TKO, SUBMISSION, DECISION) ";
-   static String prepedFighterVals = "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";    
-     
-    public static void main(String[] args) throws IOException, SQLException {       
-        connectToDB();
-   //     Fighter fighter = new Fighter("name");
-          // FighterProfileScrapper x = new FighterProfileScrapper();
-      //  scrapeUFCprofile("tito ortiz",fighter);
-      PreparedStatement x = conn.prepareStatement(prepedInsertCols + prepedFighterVals);
-        for(int i = 0; i <31; i++)
-            System.out.print("?,");   
-   
-    }
-   
-    public FighterProfileScrapper(Connection conn){
-        this.conn = conn;
-    }
-    
-   public FighterProfileScrapper(){
+   public static void scrapeFighter(Document fighterStatPage)throws UnsupportedOperationException{       
+       Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
+       String fighterName = Cleaner.removeApostrophe(name.text());    
         
+       if(!dataBaseContains(fighterName)){
+            Fighter fighter = new Fighter(fighterName);
+           try {
+               scrapeUFCprofile(fighter);
+               Elements statVals = fighterStatPage.getElementsByClass("b-list__box-list-item b-list__box-list-item_type_block");   
+               fighter.dob = Cleaner.reformatDate(statVals.get(3).ownText()).getYear();                
+               fighter.strikesLanded = Double.parseDouble(statVals.get(4).ownText().trim());          
+               fighter.strikingAccuracy = Cleaner.percentageToDecimal(statVals.get(5));
+               fighter.strikesAbsorbed = Double.parseDouble(statVals.get(6).ownText());
+               fighter.takeDownsLanded = Double.parseDouble(statVals.get(8).ownText());
+               fighter.takeDownAccuracy = Cleaner.percentageToDecimal(statVals.get(9));
+               fighter.takeDownDefence = Cleaner.percentageToDecimal(statVals.get(10));
+               
+               Elements statVals2 = fighterStatPage.getElementsByClass("b-list__box-list-item  b-list__box-list-item_type_block");
+               fighter.stance = statVals2.get(0).ownText().trim();
+               fighter.strikingDefence = Cleaner.percentageToDecimal(statVals2.get(1));
+               fighter.submissionAverage = Double.parseDouble(statVals2.get(2).ownText().trim());
+               fighter.reach = (int) (2.54 * Cleaner.parseInt(statVals.get(2)));               
+               DataBaseMessenger.insertNewFighterToDB(fighter);
+           }catch(HttpStatusException e){
+               throw new UnsupportedOperationException("WWW.UFC.COM url for fighter " + fighterName + " couldnt be found" );
+           }catch (IOException ex) {
+               System.out.println(ex);
+           }catch(NumberFormatException e){
+               scrapeReachFromOtherWebsite(fighter);
+               DataBaseMessenger.insertNewFighterToDB(fighter);
+           }catch(DateTimeParseException e){
+               throw new  UnsupportedOperationException("DOB" + fighterName + " couldnt be found and lacked data" );
+           }
+       }
+   }    
+   
+    public static Document getFighterDocument(Fighter fighter) throws IOException{
+       //  String name = Cleaner.whiteSpaceToHyphen(fighter.getName());
+         String url = "https://www.ufc.com/athlete/" + fighter.getURLName();
+         Document fighterPage = Jsoup.connect(url).get(); // URL shortened! 
+         return fighterPage;
+    }
+   
+    public static boolean dataBaseContains(String name){       
+      return DataBaseMessenger.checkDBContainsFighter(name);       
    }
    
-   public static void connectToDB(){
-       try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println(conn.toString() + " connectected successfully");
-        } catch (SQLException ex) {
-            System.err.println(ex);
+   public static void scrapeReachFromOtherWebsite(Fighter fighter){       
+        try {
+            Document fighterPage = getFighterDocument(fighter);
+            Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
+            Elements biographyValues  = fighterPage.getElementsByClass("c-bio__text");
+            for (int i = 0; i < biographyValues.size(); i++) {
+                String label = biographyLabels.get(i).text().trim();
+                String value = biographyValues.get(i).text();
+                if(label.contains("Reach")){             
+                    fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
+                    return;
+                }else{
+                    continue;
+                }
+            }
+            fighter.reach = 0;
+        }catch (IOException ex) {
             Logger.getLogger(FighterProfileScrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
    }
    
-   public static boolean dataBaseContains(String name) throws SQLException{       
-       Statement statement = conn.createStatement();
-       String query = "SELECT * FROM FIGHTERS WHERE FIGHTERS.FIGHTERNAME = '" + name +"'";
-       ResultSet rs = statement.executeQuery(query);
-       while(rs.next()){
-           return true;
-       }
-       return false;
-   }
-   
-   public static void scrapeUFCStatsProfile(Document fighterStatPage){
-       
-       Element name = fighterStatPage.getElementsByClass("b-content__title-highlight").get(0);
-       String fighterName = Cleaner.parseText(name);       
-       if(!dataBaseContains(name)){
-           Fighter fighter = new Fighter("name");        
-           scrapeUFCprofile(fighter);
-           
-           
-       }
-   }
-
-    
-    public static void scrapeUFCprofile(Fighter fighter) throws IOException, SQLException{       
-          
-        String name = Cleaner.whiteSpaceToHyphen(fighter.name);
-
-        String url = "https://www.ufc.com/athlete/" + name;
-        Document fighterPage = Jsoup.connect(url).get(); // URL shortened!            
-
+    public static void scrapeUFCprofile(Fighter fighter) throws IOException{    
+        
+        Document fighterPage = getFighterDocument(fighter);        
         Elements fighterStats = fighterPage.getElementsByClass("c-stat-compare__number");
-//            for(Element stat: fighterStats){			   	
-//              String statValue = stat.text();
-//              statValue = statValue.replaceAll("'"," ");    
-//              System.out.println(statValue);
-//            }
-        fighter.strikesLanded = Cleaner.parseDouble(fighterStats.get(0));
-        fighter.strikesAbsorbed = Cleaner.parseDouble(fighterStats.get(1));
-        fighter.takeDownsLanded = Cleaner.parseDouble(fighterStats.get(2));
-        fighter.submissionAverage = Cleaner.parseDouble(fighterStats.get(3));
-        fighter.strikingDefence = Cleaner.percentageToDecimal(fighterStats.get(4).text());
-        fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
-        fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
-        String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
-        fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
-
+//        fighter.strikesLanded = Cleaner.parseDouble(fighterStats.get(0));
+//        fighter.strikesAbsorbed = Cleaner.parseDouble(fighterStats.get(1));
+//        fighter.takeDownsLanded = Cleaner.parseDouble(fighterStats.get(2));
+//        fighter.submissionAverage = Cleaner.parseDouble(fighterStats.get(3));
+//        fighter.strikingDefence = Cleaner.percentageToDecimal(fighterStats.get(4).text());
+//        fighter.takeDownDefence = Cleaner.percentageToDecimal(fighterStats.get(5).text());     
+        try{
+            fighter.knockDownRatio = Cleaner.parseDouble(fighterStats.get(6));
+            String timeInDecimal  = Cleaner.replace(fighterStats.get(7),":",".");
+            fighter.averageFightTime = Double.parseDouble(timeInDecimal);                       
+        }catch(IndexOutOfBoundsException e){
+            fighter.knockDownRatio = 0.00;
+        }catch(NumberFormatException e){
+            fighter.averageFightTime = 15.00;
+        }
+        
+        //Label and value pairs from the biograpy section. The structure and information contained varies per fighter so values are extracted in this fashion
         Elements biographyLabels = fighterPage.getElementsByClass("c-bio__label");
         Elements biographyValues  = fighterPage.getElementsByClass("c-bio__text");            
-
-
+        boolean legReachInfoAvailable = false;
         for (int i = 0; i < biographyValues.size(); i++) {
-            String label = biographyLabels.get(i).text();
+            String label = biographyLabels.get(i).text().trim();
             String value = biographyValues.get(i).text();
-            System.out.println(label + ": " + value);
-            if(label.contains("AGE")){
-                fighter.dob = LocalDate.now().getYear() - Cleaner.parseInt(biographyValues.get(i));
-            }else if(label.contains("HEIGHT")){
+           // System.out.println(label + ": " + value);
+            if(label.contains("Height")){
                 fighter.height = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
-            }else if(label.contains("WEIGHT")){
+            }else if(label.contains("Weight")){
                 fighter.weight = (int) Cleaner.parseDouble(biographyValues.get(i));
-            }                
-        }            
-        fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",1);
-        fighter.homeTown = Cleaner.splitThenExtract(biographyValues.get(1),",", 0);        
-
-        Element fighterHistory = fighterPage.getElementsByClass("c-hero__headline-suffix tz-change-inner").get(0);
-        System.out.println(fighterHistory.text());
-        String recordClean  = Cleaner.getNumberAndHyphen(fighterHistory.text());
-        System.out.println(recordClean);
-        String [] record = recordClean.split("-");
-        int wins = Integer.parseInt(record[0]);
-        int losses = Integer.parseInt(record[1]);            
-
-        Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value");
-        for(Element e: percentageStats){
-            System.out.println(e.text());
-            System.out.println(Cleaner.extractPercentage(e));
+            }else if(label.contains("Leg reach")){             
+                fighter.legReach = (int) (2.54 * Cleaner.parseDouble(biographyValues.get(i)));
+                legReachInfoAvailable = true;
+            }
+        }       
+        if(!legReachInfoAvailable)
+            fighter.legReach = 0;
+        try{
+            fighter.homeTown = Cleaner.splitThenExtract(biographyValues.get(1),",", 0);
+            fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",1);
+        }catch(ArrayIndexOutOfBoundsException e){
+            fighter.homeCountry = Cleaner.splitThenExtract(biographyValues.get(1),",",0);
         }
-        fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
-        fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
-        fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
 
-        fighter.tko = Cleaner.extractPercentage(percentageStats.get(3));
-        fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
-        fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
-
-        fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
-        fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
-        fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));            
-
-
-        fighter.strikingAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(0));  
-        fighter.takeDownAccuracy = Cleaner.percentageToDecimal(fighterPage.getElementsByClass("e-chart-circle__percent").get(1));
-        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(0).text());
-        System.out.println("exotec " +fighterPage.getElementsByClass("e-chart-circle__percent").get(1).text());  
+        Elements percentageStats = fighterPage.getElementsByClass("c-stat-3bar__value"); 
+        try{
+            fighter.strikesStanding = Cleaner.extractPercentage(percentageStats.get(0));
+            fighter.clinchStrikes = Cleaner.extractPercentage(percentageStats.get(1));
+            fighter.groundStrikes = Cleaner.extractPercentage(percentageStats.get(2));
+            if(fighter.strikesStanding + fighter.groundStrikes + fighter.clinchStrikes == 0){
+                throw new UnsupportedOperationException("Fighter: " + fighter.getName() + " does not enough data to use");
+            }
+            fighter.tko = Cleaner.extractPercentage(percentageStats.get(3));
+            fighter.decision = Cleaner.extractPercentage(percentageStats.get(4));
+            fighter.submission = Cleaner.extractPercentage(percentageStats.get(5));
+            fighter.headStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_head_percent"));
+            fighter.bodyStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_body_percent"));
+            fighter.legStrikes = Cleaner.percentageToDecimal(fighterPage.getElementById("e-stat-body_x5F__x5F_leg_percent"));    
+        }catch(IndexOutOfBoundsException e){
+            throw new UnsupportedOperationException("Fighter: " + fighter.getName() + " does not enough data to use");
+        }
     }
     
-    public insertNewFighterToDB(Fighter fighter){
-        
-    }
+
     
 }

@@ -7,6 +7,7 @@ package TextPreprocessingUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import org.jsoup.nodes.Element;
 
 /**
@@ -16,7 +17,7 @@ import org.jsoup.nodes.Element;
 public class Cleaner {
     
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM-dd-yyyy");
-    
+    static DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("MMM-dd-yyyy");
     
     public static String getNumericalString(String text){
         // text = text.replaceAll("([a-zA-Z|\\-|\\s|\"|'|:])+","");
@@ -26,15 +27,25 @@ public class Cleaner {
     }
     
     public static int parseInt(Element element){
-        return Integer.parseInt(element.text());
+        String text = element.text().replaceAll("([^0-9])+","");
+        return Integer.parseInt(text);
     }    
  
     
     public static String whiteSpaceToHyphen(String text){
+        text = text.replaceAll("'+",""); 
         text = text.replaceAll("\\s+","-");     
         return text;
     }
-     
+    public static void main(String[] args) {
+        System.out.println(removeApostrophe(" peter o'kim "));
+    }
+    public static String removeApostrophe(String text){
+        text = text.trim();
+        text = text.replaceAll("\\.+","");  
+        text = text.replaceAll("'+","");     
+        return text;
+    }
     
     public static double percentageToDecimal(Element element){
        return  percentageToDecimal(element.text());
@@ -80,6 +91,15 @@ public class Cleaner {
         }
     }
     
+     public static String splitThenExtract(String text, String seperator, int indexToExtract){
+        String [] splits = text.split(seperator);
+        if(indexToExtract >= 0){
+            return splits[indexToExtract];
+        }else{//if indexToExtract is negative
+            return splits[splits.length + indexToExtract];
+        }
+    }
+    
      public static  double extractPercentage(Element element){
           return extractPercentage(element.text());
      }
@@ -90,12 +110,18 @@ public class Cleaner {
         return percentage;
     }
      
-    //converts Jan 14 2019 ---> 
-    public static LocalDate reformatDate(String date){
+    //converts Jan 14 2019 --->  2019-01-14
+    public static LocalDate reformatDate(String date){        
         date = date.trim();
+        date = date.replaceAll("\\.", "");
         date = date.replaceAll("\\s", "-");
-        date = date.replaceAll(",", "").trim();   
-        LocalDate aDate = LocalDate.parse(date, formatter);
-        return aDate;
+        date = date.replaceAll(",", "").trim();  
+        try{
+            LocalDate aDate = LocalDate.parse(date, formatter);
+             return aDate;
+        }catch(DateTimeParseException e){
+            LocalDate aDate = LocalDate.parse(date, formatter2);
+            return aDate;
+        }  
     }
 }

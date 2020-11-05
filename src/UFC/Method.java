@@ -1,5 +1,0 @@
-package UFC;
-
-public enum Method {
-    TKOWIN,SUBWIN,UDWIN,SDWIN,TKOLOSS,SUBLOSS,UDLOSS,SDLOSS,NA
-}

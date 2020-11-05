@@ -6,6 +6,7 @@
 package Scrappers;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,5 +17,5 @@ public class UFCEvent {
     String country;
     String city;
     LocalDate date;
-    
+  //  ArrayList<Fight> fights;
 }
