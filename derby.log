@@ -1,20 +1,16 @@
-Wed Oct 07 02:37:06 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
+Wed Oct 07 02:53:55 NZDT 2020 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Wed Oct 07 02:37:07 NZDT 2020:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-fe21-40d0-000046161595 
-on database directory C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper\UFC with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
-Loaded from file:/C:/Users/peter/OneDrive/Documents/PGC/db-derby-10.14.2.0-bin/lib/derby.jar
+Wed Oct 07 02:53:56 NZDT 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0174-fe30-a6e7-00002bbd62ac 
+on database directory C:\Users\admin\Documents\NetBeansProjects\UFCScrapper\UFC with class loader sun.misc.Launcher$AppClassLoader@1d44bcfa 
+Loaded from file:/C:/Users/admin/Documents/PGC/db-derby-10.14.2.0-bin/lib/derby.jar
 java.vendor=Oracle Corporation
-java.runtime.version=13.0.2+8
-user.dir=C:\Users\peter\OneDrive\Documents\PGC\db-derby-10.14.2.0-bin
+java.runtime.version=1.8.0_261-b12
+user.dir=C:\Users\admin\Documents\PGC\db-derby-10.14.2.0-bin
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0
-derby.system.home=C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper
+derby.system.home=C:\Users\admin\Documents\NetBeansProjects\UFCScrapper
 Database Class Loader started - derby.database.classpath=''
 ----------------------------------------------------------------
-Wed Oct 07 02:40:18 NZDT 2020: Shutting down Derby engine
-----------------------------------------------------------------
-Wed Oct 07 02:40:18 NZDT 2020:
-Shutting down instance a816c00e-0174-fe21-40d0-000046161595 on database directory C:\Users\peter\OneDrive\Documents\netbeansProjects\UFCScrapper\UFC with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@c387f44 
-----------------------------------------------------------------
+Wed Oct 07 03:25:16 NZDT 2020: Shutting down Derby engine
