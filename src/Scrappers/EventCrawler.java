@@ -7,6 +7,7 @@ package Scrappers;
 
 import TextPreprocessingUtils.Cleaner;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -66,6 +67,8 @@ public class EventCrawler {
             event.attendance = Integer.parseInt(eventAttendence);
         }catch(ArrayIndexOutOfBoundsException e){//if attendence is 0
             event.attendance = 0;
+        }catch(IndexOutOfBoundsException e){
+             event.attendance = 0;
         }             
         event.country = Cleaner.splitThenExtract(eventDetails.get(1),",",-1);
         event.city = Cleaner.splitThenExtract(eventDetails.get(1),",",-2);       
@@ -104,7 +107,7 @@ public class EventCrawler {
             Element winner = fighters.get(i);
             Element loser = fighters.get(i+1);
             fighterName = Cleaner.removeApostrophe(winner.text());
-            if(DataBaseMessenger.checkDBContainsFight(event.date,fighterName)){
+            if(checkDBContainsFight(event.date,fighterName)){
                 System.out.println("This fight is already in the dataBase");
                 continue;
             }
@@ -117,14 +120,29 @@ public class EventCrawler {
    }
    
    //For upcoming events the outcome is not known, so method is always "HASNT HAPPENED" 
-   public static void scrapeUpComingFights(UFCEvent event, ArrayList<Element> fighters){
-       int numFights = calcNumFightsToScrape(event.attendance);
-       for(int i=0; i< numFights*2 ; i += 2){            
+    public static void scrapeUpComingFights(UFCEvent event, ArrayList<Element> fighters){
+     //  int numFights = calcNumFightsToScrape(event.attendance);
+        for(int i=0; i< fighters.size(); i += 2){            
             Element redCorner = fighters.get(i);
             Element blueCorner = fighters.get(i+1);
-         //   FightScrapper.scrapeFight(redCorner,blueCorner,event,"HASNT HAPPENED", false);
-       }
-   }
+            String fighterName = Cleaner.removeApostrophe( blueCorner.text());
+            if(checkDBContainsFight(event.date,fighterName)){
+                System.out.println("This fight is already in the dataBase");
+                continue;
+            }
+            Fight fight = new Fight("YET TO HAPPEN", event, false);
+            FightScrapper.scrapeUpComingFight(redCorner,blueCorner,fight);
+        }
+    }
+   
+    private static boolean checkDBContainsFight(LocalDate date,String fighterName){
+        if(DataBaseMessenger.checkDBContainsFight(date,fighterName)){
+            System.out.println("This fight is already in the dataBase");
+            return true;
+        }
+        else return false;
+    }
+   
    
    //determines how many fights to scrap for each event, the prelim fights on smaller fight cards arnt worth scraping
    public static int calcNumFightsToScrape(int attendence){
@@ -155,6 +173,7 @@ public class EventCrawler {
                 fightOutcomes.add(outcome.text());
             }
        }
+        System.out.println(fighters);
    }
    
     public static void getEventInfo(ArrayList<Element> fighters, ArrayList<Element> fightersOnEvent, Queue<String> fightOutcomes, Document eventPage){       
