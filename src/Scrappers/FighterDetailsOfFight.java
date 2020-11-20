@@ -22,7 +22,7 @@ public class FighterDetailsOfFight {
     int lossesAtTimeOfEvent;    
     int currentWins;
     int currentLoses;
-   
+    
     int layOffTimeMonths;    
     int submissionLosses;
     int numUFCFights;
