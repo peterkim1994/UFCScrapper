@@ -25,7 +25,7 @@ public class DataBaseMessenger {
  
    //private static DataBaseMessenger instance;   
    private static Connection conn;
-   private static String url = "jdbc:derby://localhost:1527/UFC;";
+   private static String url = "jdbc:derby:UFC;";
    //String url = "jdbc:derby:UFC;";
    private static String user = "peterKim";
    private static String password = "peterkim";  
